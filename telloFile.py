@@ -49,10 +49,9 @@ if sys.platform == 'win32':
     except:
         print('Error determining network. Continuing anyway.')
     if "TELLO-" in data:
-        print('Network detected:', wifi_val)
-        print('No errors. \r\n')
+        print('Required network detected.')
     else:
-        print('Network detected:', wifi_val)
+        print('Network detected')
         print('It seems like you have joined a different network. Please make sure that you have joined the TELLO-XXXXX Wi-Fi.')
         approval = input("Are you sure you want to continue with the script? (y/n)")
         if approval == 'y':
@@ -79,8 +78,7 @@ elif sys.platform == 'darwin':
             else:
                 sys.exit()
         else:
-            print('Network detected:', wifi_val)
-            print('No errors. \r\n')
+            print('Required network detected:', wifi_val)
     except:
         print('\r\nSeems like there was an error checking the network.')
         print('Aborting script.\r\n')
@@ -162,6 +160,7 @@ class Tello:
         self.run('stop')
         print('Stopping all movement, hovering.\r\n')
     def up(self, x):
+        global operation_done
         try:
             x = int(x)
             if x >= 20 and x <= 500:
@@ -171,14 +170,13 @@ class Tello:
             else:
                 print('\r\nERROR: Parameter must be between 20 and 500')
                 print('ERROR LOCATION: tello.down()\r\n')
-                global operation_done
                 operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.up()\r\n')
-            global operation_done
             operation_done = True
     def down(self, x):
+        global operation_done
         try:
             x = int(x)
             if x >= 20 and x <= 500:
@@ -188,14 +186,13 @@ class Tello:
             else:
                 print('\r\nERROR: Parameter must be between 20 and 500\r\n')
                 print('ERROR LOCATION: tello.down()\r\n')
-                global operation_done
                 operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.down()\r\n')
-            global operation_done
             operation_done = True
     def left(self, x):
+        global operation_done
         try:
             x = int(x)
             if x >= 20 and x <= 500:
@@ -205,14 +202,13 @@ class Tello:
             else:
                 print('\r\nERROR: Parameter must be between 20 and 500')
                 print('ERROR LOCATION: tello.left()\r\n')
-                global operation_done
                 operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.left()\r\n')
-            global operation_done
             operation_done = True
     def right(self, x):
+        global operation_done
         try:
             x = int(x)
             if x >= 20 and x <= 500:
@@ -222,14 +218,13 @@ class Tello:
             else:
                 print('\r\nERROR: Parameter must be between 20 and 500')
                 print('ERROR LOCATION: tello.right()\r\n')
-                global operation_done
                 operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.right()\r\n')
-            global operation_done
             operation_done = True
     def forward(self, x):
+        global operation_done
         try:
             x = int(x)
             if x >= 20 and x <= 500:
@@ -239,14 +234,13 @@ class Tello:
             else:
                 print('\r\nERROR: Parameter must be between 20 and 500')
                 print('ERROR LOCATION: tello.forward()\r\n')
-                global operation_done
                 operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.forward()\r\n')
-            global operation_done
             operation_done = True
     def back(self, x):
+        global operation_done
         try:
             x = int(x)
             if x >= 20 and x <= 500:
@@ -256,14 +250,13 @@ class Tello:
             else:
                 print('\r\nERROR: Parameter must be between 20 and 500')
                 print('ERROR LOCATION: tello.back()\r\n')
-                global operation_done
                 operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.back()\r\n')
-            global operation_done
             operation_done = True
     def cw(self, x):
+        global operation_done
         try:
             x = int(x)
             if x >= 1 and x <= 360:
@@ -273,14 +266,13 @@ class Tello:
             else:
                 print('\r\nERROR: Parameter must be between 1 and 360')
                 print('ERROR LOCATION: tello.cw()\r\n')
-                global operation_done
                 operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.cw()\r\n')
-            global operation_done
             operation_done = True
     def ccw(self, x):
+        global operation_done
         try:
             x = int(x)
             if x >= 1 and x <= 360:
@@ -290,14 +282,13 @@ class Tello:
             else:
                 print('\r\nERROR: Parameter must be between 1 and 360')
                 print('ERROR LOCATION: tello.ccw()\r\n')
-                global operation_done
                 operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.ccw()\r\n')
-            global operation_done
             operation_done = True
     def flip(self, x):
+        global operation_done
         try:
             x = str(x)
             if x == 'l' or x == 'r' or x == 'f' or x == 'b':
@@ -307,14 +298,13 @@ class Tello:
             else:
                 print('\r\nERROR: Parameter must be either f, b, r, or l!')
                 print('ERROR LOCATION: tello.flip()\r\n')
-                global operation_done
                 operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be a letter!')
             print('ERROR LOCATION: tello.flip()\r\n')
-            global operation_done
             operation_done = True
     def setSpeed(self, x):
+        global operation_done
         try:
             x = int(x)
             if x >= 1 and x <= 100:
@@ -324,30 +314,26 @@ class Tello:
             else:
                 print('\r\nERROR: Parameter must be between 10 and 100')
                 print('ERROR LOCATION: tello.setSpeed()\r\n')
-                global operation_done
                 operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.setSpeed()\r\n')
-            global operation_done
             operation_done = True
     def setWifi(self, ssid, passw):
+        global operation_done
         try:
             if ssid and passw:
                 print('ERROR: 403 -- Operation Denied')
                 print('ERROR LOCATION: tello.setWifi()')
                 print('ERROR: Figure out another way.\r\n')
-                global operation_done
                 operation_done = True
             else:
                 print('\r\nERROR: Parameters must be strings!')
                 print('ERROR LOCATION: tello.setWifi()\r\n')
-                global operation_done
                 operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.setWifi()\r\n')
-            global operation_done
             operation_done = True
     def setMon(self):
         self.run('mon')
@@ -356,6 +342,7 @@ class Tello:
         self.run('moff')
         print('Disabling Mission Pad detection\r\n')
     def setMdirection(self, x):
+        global operation_done
         try:
             x = int(x)
             if x >= 0 and x <= 3:
@@ -365,12 +352,10 @@ class Tello:
             else:
                 print('\r\nERROR: Parameter must be between 0 and 3')
                 print('ERROR LOCATION: tello.setMdircetion()\r\n')
-                global operation_done
                 operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.setMdirection()\r\n')
-            global operation_done
             operation_done = True
     def getSpeed(self):
         self.run('speed?')
@@ -391,6 +376,7 @@ class Tello:
         self.run('sn?')
         print('\r\nGetting Tello serial number:')
     def go(self, x, y, z, s):
+        global operation_done
         x = int(x)
         y = int(y)
         z = int(z)
@@ -403,14 +389,13 @@ class Tello:
             else:
                 print('\r\nERROR: Parameter \'s\' needs to be between 10 and 100!')
                 print('ERROR LOCATION: tello.go()\r\n')
-                global operation_done
                 operation_done = True
         else:
             print('\r\nERROR: Parameters x, y, z need to be between 500 and -500!')
             print('ERROR LOCATION: tello.go()\r\n')
-            global operation_done
             operation_done = True
     def curve(self, x1, x2, y1, y2, z1, z2, s):
+        global operation_done
         try:
             x1 = int(x1)
             y1 = int(y1)
@@ -427,19 +412,17 @@ class Tello:
                 else:
                     print('\r\nERROR: Parameter \'s\' needs to be between 10 and 60!')
                     print('ERROR LOCATION: tello.curve()\r\n')
-                    global operation_done
                     operation_done = True
             else:
                 print('\r\nERROR: Parameters x1, x2, y1, y2, z1, z2 need to be between 500 and -500!')
                 print('ERROR LOCATION: tello.curve()\r\n')
-                global operation_done
                 operation_done = True
         except:
             print('\r\nERROR: Parameters need to be integers!')
             print('ERROR LOCATION: tello.curve()\r\n')
-            global operation_done
             operation_done = True
     def goMpad(self, x, y, z, s, mid: str):
+        global operation_done
         global mids
         try:
             x = int(x)
@@ -461,24 +444,21 @@ class Tello:
                     else:
                         print('\r\nERROR: Parameter mid needs to be between m1 and m8!')
                         print('ERROR LOCATION: tello.goMpad()\r\n')
-                        global operation_done
                         operation_done = True
                 else:
                     print('\r\nERROR: Parameter \'s\' needs to be between 10 and 100!')
                     print('ERROR LOCATION: tello.goMpad()\r\n')
-                    global operation_done
                     operation_done = True
             else:
                 print('\r\nERROR: Parameters x, y, z need to be between 500 and -500!')
                 print('ERROR LOCATION: tello.goMpad()\r\n')
-                global operation_done
                 operation_done = True
         except:
             print('\r\nERROR: Parameters need to be integers!')
             print('ERROR LOCATION: tello.goMpad()\r\n')
-            global operation_done
             operation_done = True
     def curveMpad(self, x1, x2, y1, y2, z1, z2, s, mid):
+        global operation_done
         global mids
         try:
             x1 = int(x1)
@@ -503,22 +483,18 @@ class Tello:
                     else:
                         print('\r\nERROR: Parameter mid needs to be between m1 and m8!')
                         print('ERROR LOCATION: tello.curveMpad()\r\n')
-                        global operation_done
                         operation_done = True
                 else:
                     print('\r\nERROR: Parameter \'s\' needs to be between 10 and 60!')
                     print('ERROR LOCATION: tello.curveMpad()\r\n')
-                    global operation_done
                     operation_done = True
             else:
                 print('\r\nERROR: Parameters x1, x2, y1, y2, z1, z2 need to be between 500 and -500!')
                 print('ERROR LOCATION: tello.curveMpad()\r\n')
-                global operation_done
                 operation_done = True
         except:
             print('\r\nERROR: Parameters need to be integers!')
             print('ERROR LOCATION: tello.curveMpad()\r\n')
-            global operation_done
             operation_done = True
     def end(self):
         sock.close()
