@@ -36,17 +36,22 @@ time.sleep(1)
 
 
 # Check what network is connected
-try:
-    process = subprocess.Popen(['/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport','-I'], stdout=subprocess.PIPE)
-    out, err = process.communicate()
-    process.wait()
-    wifi_val = {}
-    for line in out.decode('utf-8').split('\n'):
-        if "SSID: " in line:
-            key, val = line.split(': ')
-            val = val.strip()
-            wifi_val = val
-    if 'TELLO-' not in wifi_val:
+if sys.platform == 'win32':
+    wifi = subprocess.check_output(['netsh', 'WLAN', 'show', 'interfaces'])
+    data = wifi.decode('utf-8')
+    wifi_val = 'Not connected'
+    try:
+        for line in data.split('\n'):
+            if "SSID: " in line:
+                key, val = line.split(': ')
+                val = val.strip()
+                wifi_val = val
+    except:
+        print('Error determining network. Continuing anyway.')
+    if "TELLO-" in data:
+        print('Network detected:', wifi_val)
+        print('No errors. \r\n')
+    else:
         print('Network detected:', wifi_val)
         print('It seems like you have joined a different network. Please make sure that you have joined the TELLO-XXXXX Wi-Fi.')
         approval = input("Are you sure you want to continue with the script? (y/n)")
@@ -54,13 +59,35 @@ try:
             print('\r\n')
         else:
             sys.exit()
-    else:
-        print('Network detected:', wifi_val)
-        print('No errors. \r\n')
-except:
-    print('\r\nSeems like there was an error checking the network.')
-    print('Aborting script.\r\n')
-    sys.exit()
+elif sys.platform == 'darwin':
+    try:
+        process = subprocess.Popen(['/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport','-I'], stdout=subprocess.PIPE)
+        out, err = process.communicate()
+        process.wait()
+        wifi_val = 'Not connected'
+        for line in out.decode('utf-8').split('\n'):
+            if "SSID: " in line:
+                key, val = line.split(': ')
+                val = val.strip()
+                wifi_val = val
+        if 'TELLO-' not in wifi_val:
+            print('Network detected:', wifi_val)
+            print('It seems like you have joined a different network. Please make sure that you have joined the TELLO-XXXXX Wi-Fi.')
+            approval = input("Are you sure you want to continue with the script? (y/n)")
+            if approval == 'y':
+                print('\r\n')
+            else:
+                sys.exit()
+        else:
+            print('Network detected:', wifi_val)
+            print('No errors. \r\n')
+    except:
+        print('\r\nSeems like there was an error checking the network.')
+        print('Aborting script.\r\n')
+        sys.exit()
+else:
+    print('Could not determine network.')
+    print('Make sure that you are connected to the TELLO-XXXXX WiFi network.')
 
 
 # Print info to the user
@@ -295,7 +322,7 @@ class Tello:
                 self.run(a)
                 print('Setting speed to', x, 'cm/s \r\n')
             else:
-                print('\r\nERROR: Parameter must be between 1 and 100')
+                print('\r\nERROR: Parameter must be between 10 and 100')
                 print('ERROR LOCATION: tello.setSpeed()\r\n')
                 global operation_done
                 operation_done = True
@@ -356,7 +383,7 @@ class Tello:
         print('\r\nObtaining current flight time:')
     def getWifi(self):
         self.run('wifi?')
-        print('\r\nGathering WiFi information:')
+        print('\r\nGathering WiFi SNR:')
     def getSDK(self):
         self.run('sdk?')
         print('\r\nGetting Tello SDK Version:')
