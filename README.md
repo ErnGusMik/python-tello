@@ -174,6 +174,30 @@ Example:
 tello.flip('l')
 ```
 
+### tello.throwFly()
+Toss the drone in the air within 5 seconds of receiving response to takeoff <br />
+Possible responses: `ok` / `error` <br />
+Example:
+```python
+tello.throwFly()
+```
+
+### tello.motoron()
+Turns on motors (at a slow RPM)<br />
+Possible responses: `ok` / `error` <br />
+Example:
+```python
+tello.motoron()
+```
+
+### tello.throwFly()
+Turns off motors (use tello.motoron() first)<br />
+Possible responses: `ok` / `error` <br />
+Example:
+```python
+tello.motoroff()
+```
+
 ### tello.end()
 Ends the program. <br />
 Possible responses: `ok` / `error` <br />
