@@ -3,10 +3,7 @@
 
 
 # Import all needed libraries
-from distutils.log import error
-import numbers
 import socket
-import string
 import sys
 import time
 import threading
@@ -16,7 +13,6 @@ import subprocess
 host = ''
 port = 9000
 locaddr = (host,port)
-operation_done = True
 mids = 'm1 m2 m3 m4 m5 m6 m7 m8'
 
 # Print starting info for the user
@@ -99,284 +95,232 @@ tello_address = ('192.168.10.1', 8889)
 sock.bind(locaddr)
 
 
-# Function for receiving responses
-def receive():
-    global operation_done
-    count = 0
-    while True:
-        try:
-            data, server = sock.recvfrom(1518)
-            data = data.decode(encoding='utf-8')
-            print(data)
-            operation_done = True
-        except Exception:
-            print('\nExiting...\n')
-            sys.exit()
-
-
-# Create receiving thread
-recvThread = threading.Thread(target=receive)
-recvThread.start()
-print(recvThread)
-
-
-
 # Class for all functions for user
 class Tello:
-    def run(self, string):
-        global operation_done
-        while operation_done == False:
-            if operation_done:
+    def __init__(self):
+        self.abort = False
+        self.response = None
+        self.recvThread = threading.Thread(target=self.receive)
+        self.recvThread.start()
+    def receive(self):
+        while True:
+            try:
+                self.response, ip = sock.recvfrom(256)
+            except Exception:
                 break
-            else:
-                time.sleep(0.2)
-        if operation_done:
-            string = string.encode(encoding='utf-8')
-            operation_done = False
-            sent = sock.sendto(string, tello_address)
+    def run(self, string, message="No message "):
+        self.abort = False
+        timer = threading.Timer(10, self._set_abort)
+        # Encode the message in the utf-8 encoding
+        string = string.encode(encoding='utf-8')
+        # Send the encoded message to the Tello
+        sent = sock.sendto(string, tello_address)
+        print(message)
+        self.response = None
+        timer.start()
+        while self.response is None:
+            if self.abort is True:
+                break
+        timer.cancel()
+        if self.response == None:
+            print("ERROR: No response to latest command! \n")
+            return 'error'
+        if self.abort == False:
+            response = self.response.decode(encoding='utf-8')
+            print(response)
+            self.response = None
+            return response
+        else:
+            return 'error'
+    def _set_abort(self):
+        self.abort = True
+    # SDK 3.0 Commands
+    def throwFly(self):
+        self.run('throwfly', 'Gently toss the drone into the air within 5 seconds!\r\n')
+    def motoron(self):
+        self.run('motoron', 'Turning on motors\r\n')
+    def motoroff(self):
+        self.run('motoroff', 'Turning off motors\r\n')
+    # SDK 2.0 Commands
     def init(self):
-        self.run('command')
-        print('\r\nEnabling SDK mode\r\n')
-        operation_done = False
+        self.run('command', '\r\nEnabling SDK mode\r\n')
     def takeoff(self):
-        self.run('takeoff')
-        print('Taking off, keep clear of drone!\r\n')
+        self.run('takeoff', 'Taking off, keep clear of drone!\r\n')
     def land(self):
-        self.run('land')
-        print('Landing, keep space clear!\r\n')
+        self.run('land', 'Landing, keep space clear!\r\n')
     def streamon(self):
-        self.run('streamon')
-        print('Enabling video stream\r\n')
+        self.run('streamon', 'Enabling video stream\r\n')
     def streamoff(self):
-        self.run('streamoff')
-        print('Disabling video stream\r\n')
+        self.run('streamoff', 'Disabling video stream\r\n')
     def emergency(self, reason='No reason provided'):
-        self.run('emergency')
-        print('EMERGENCY: Disabling motors\r\n')
+        self.run('emergency', 'EMERGENCY: Disabling motors\r\n')
         print('EMERGENCY: Reason:', reason, '\r\n')
         print('EMERGENCY: Exiting script')
         sys.exit()
     def stop(self):
-        self.run('stop')
-        print('Stopping all movement, hovering.\r\n')
+        self.run('stop', 'Stopping all movement, hovering.\r\n')
     def up(self, x):
-        global operation_done
-        try:
-            x = int(x)
-            if x >= 20 and x <= 500:
-                a = ' '.join(['up', str(x)])
-                self.run(a)
-                print('Ascending to', x, 'cm from the ground \r\n')
-            else:
-                print('\r\nERROR: Parameter must be between 20 and 500')
-                print('ERROR LOCATION: tello.down()\r\n')
-                operation_done = True
-        except:
-            print('\r\nERROR: Parameter needs to be an integer!')
-            print('ERROR LOCATION: tello.up()\r\n')
-            operation_done = True
+        # try:
+        x = int(x)
+        if x >= 20 and x <= 500:
+            a = ' '.join(['up', str(x)])
+            message = ' '.join(['Ascending to', str(x), 'cm from the ground \r\n'])
+            self.run(a, message)
+        else:
+            print('\r\nERROR: Parameter must be between 20 and 500')
+            print('ERROR LOCATION: tello.down()\r\n')
+        # except:
+        #     print('\r\nERROR: Parameter needs to be an integer!')
+        #     print('ERROR LOCATION: tello.up()\r\n')
     def down(self, x):
-        global operation_done
         try:
             x = int(x)
             if x >= 20 and x <= 500:
                 a = ' '.join(['down', str(x)])
-                self.run(a)
-                print('Descending to', x, 'cm from the ground')
+                self.run(a, ' '.join(['Descending to', str(x), 'cm from the ground \r\n']))
             else:
                 print('\r\nERROR: Parameter must be between 20 and 500\r\n')
                 print('ERROR LOCATION: tello.down()\r\n')
-                operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.down()\r\n')
-            operation_done = True
     def left(self, x):
-        global operation_done
         try:
             x = int(x)
             if x >= 20 and x <= 500:
                 a = ' '.join(['left', str(x)])
-                self.run(a)
-                print('Moving left', x, 'cm, keep clear of drone\'s path! \r\n')
+                self.run(a, ' '.join(['Moving left', str(x), 'cm, keep clear of drone\'s path \r\n']))
             else:
                 print('\r\nERROR: Parameter must be between 20 and 500')
                 print('ERROR LOCATION: tello.left()\r\n')
-                operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.left()\r\n')
-            operation_done = True
     def right(self, x):
-        global operation_done
         try:
             x = int(x)
             if x >= 20 and x <= 500:
                 a = ' '.join(['right', str(x)])
-                self.run(a)
-                print('Moving right', x, 'cm, keep clear of drone\'s path!\r\n')
+                self.run(a, ' '.join(['Moving right', str(x), 'cm, keep clear of drone\'s path \r\n']))
             else:
                 print('\r\nERROR: Parameter must be between 20 and 500')
                 print('ERROR LOCATION: tello.right()\r\n')
-                operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.right()\r\n')
-            operation_done = True
     def forward(self, x):
-        global operation_done
         try:
             x = int(x)
             if x >= 20 and x <= 500:
                 a = ' '.join(['forward', str(x)])
-                self.run(a)
-                print('Moving forward', x, 'cm, keep clear of drone\'s path!\r\n')
+                self.run(a, ' '.join(['Moving forward', str(x), 'cm, keep clear of drone\'s path \r\n']))
             else:
                 print('\r\nERROR: Parameter must be between 20 and 500')
                 print('ERROR LOCATION: tello.forward()\r\n')
-                operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.forward()\r\n')
-            operation_done = True
     def back(self, x):
-        global operation_done
         try:
             x = int(x)
             if x >= 20 and x <= 500:
                 a = ' '.join(['back', str(x)])
-                self.run(a)
-                print('Moving back', x, 'cm, keep clear of drone\'s path!\r\n')
+                self.run(a, ' '.join(['Moving forward', str(x), 'cm, keep clear of drone\'s path \r\n']))
             else:
                 print('\r\nERROR: Parameter must be between 20 and 500')
                 print('ERROR LOCATION: tello.back()\r\n')
-                operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.back()\r\n')
-            operation_done = True
     def cw(self, x):
-        global operation_done
         try:
             x = int(x)
             if x >= 1 and x <= 360:
                 a = ' '.join(['cw', str(x)])
-                self.run(a)
-                print('Rotating clockwise for', x, 'degrees \r\n')
+                self.run(a, ' '.join(['Rotating clockwise for', str(x), 'degrees \r\n']))
             else:
                 print('\r\nERROR: Parameter must be between 1 and 360')
                 print('ERROR LOCATION: tello.cw()\r\n')
-                operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.cw()\r\n')
-            operation_done = True
     def ccw(self, x):
-        global operation_done
         try:
             x = int(x)
             if x >= 1 and x <= 360:
                 a = ' '.join(['ccw', str(x)])
-                self.run(a)
-                print('Rotating counterclockwise for', x, 'degrees \r\n')
+                self.run(a, ' '.join(['Rotating counter-clockwise for', str(x), 'degrees \r\n']))
             else:
                 print('\r\nERROR: Parameter must be between 1 and 360')
                 print('ERROR LOCATION: tello.ccw()\r\n')
-                operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.ccw()\r\n')
-            operation_done = True
     def flip(self, x):
-        global operation_done
         try:
             x = str(x)
             if x == 'l' or x == 'r' or x == 'f' or x == 'b':
                 a = ' '.join(['flip', x])
-                self.run(a)
-                print('Flipping', x + ', be careful! \r\n')
+                self.run(a, ' '.join(['Flipping', str(x), ', be careful \r\n']))
             else:
                 print('\r\nERROR: Parameter must be either f, b, r, or l!')
                 print('ERROR LOCATION: tello.flip()\r\n')
-                operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be a letter!')
             print('ERROR LOCATION: tello.flip()\r\n')
-            operation_done = True
     def setSpeed(self, x):
-        global operation_done
         try:
             x = int(x)
             if x >= 1 and x <= 100:
                 a = ' '.join(['speed', str(x)])
-                self.run(a)
-                print('Setting speed to', x, 'cm/s \r\n')
+                self.run(a, ' '.join(['Setting speed to', str(x), 'cm/s \r\n']))
             else:
                 print('\r\nERROR: Parameter must be between 10 and 100')
                 print('ERROR LOCATION: tello.setSpeed()\r\n')
-                operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.setSpeed()\r\n')
-            operation_done = True
     def setWifi(self, ssid, passw):
-        global operation_done
         try:
             if ssid and passw:
                 print('ERROR: 403 -- Operation Denied')
                 print('ERROR LOCATION: tello.setWifi()')
                 print('ERROR: Figure out another way.\r\n')
-                operation_done = True
             else:
                 print('\r\nERROR: Parameters must be strings!')
                 print('ERROR LOCATION: tello.setWifi()\r\n')
-                operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.setWifi()\r\n')
-            operation_done = True
     def setMon(self):
-        self.run('mon')
-        print('Enabling Mission Pad detection\r\n')
+        self.run('mon', 'Enabling Mission Pad detection\r\n')
     def setMoff(self):
-        self.run('moff')
-        print('Disabling Mission Pad detection\r\n')
+        self.run('moff', 'Disabling Mission Pad detection\r\n')
     def setMdirection(self, x):
-        global operation_done
         try:
             x = int(x)
             if x >= 0 and x <= 3:
                 a = ' '.join(['mdirection', str(x)])
-                self.run(a)
-                print('Setting Mission Pad Detection to setting', x)
+                self.run(a, ' '.join(['Setting Mission Pad Detection to setting', str(x), '\r\n']))
             else:
                 print('\r\nERROR: Parameter must be between 0 and 3')
                 print('ERROR LOCATION: tello.setMdircetion()\r\n')
-                operation_done = True
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.setMdirection()\r\n')
-            operation_done = True
     def getSpeed(self):
-        self.run('speed?')
-        print('\r\nObtaining current speed:')
+        self.run('speed?', 'Obtaining current speed: \r\n')
     def getBattery(self):
-        self.run('battery?')
-        print('\r\nObtaining battery level:')
+        self.run('battery?', 'Obtaining battery level: \r\n')
     def getTime(self):
-        self.run('time?')
-        print('\r\nObtaining current flight time:')
+        self.run('time?', 'Obtaining current flight time: \r\n')
     def getWifi(self):
-        self.run('wifi?')
-        print('\r\nGathering WiFi SNR:')
+        self.run('wifi?', 'Obtaining WiFi SNR: \r\n')
     def getSDK(self):
-        self.run('sdk?')
-        print('\r\nGetting Tello SDK Version:')
+        self.run('sdk?', 'Obtaining Tello SDK Version: \r\n')
     def getSN(self):
-        self.run('sn?')
-        print('\r\nGetting Tello serial number:')
+        self.run('sn?', 'Obtaining Tello serial number: \r\n')
     def go(self, x, y, z, s):
-        global operation_done
         x = int(x)
         y = int(y)
         z = int(z)
@@ -384,18 +328,14 @@ class Tello:
         if 500 >= x >= -500 and 500 >= y >= -500 and 500 >= z >= -500:
             if 100 >= s >= 10:
                 a = ' '.join(['go', str(x), str(y), str(z), str(s)])
-                self.run(a)
-                print('Going according to parameters coordinates (x, y, z):', x, y, z, 'at the speed of', s, 'cm/s')
+                self.run(a, ' '.join(['Going according to parameters coordinates (x, y, z):', str(x), str(y), str(z), 'at the speed of', str(s), 'cm/s\r\n']))
             else:
                 print('\r\nERROR: Parameter \'s\' needs to be between 10 and 100!')
                 print('ERROR LOCATION: tello.go()\r\n')
-                operation_done = True
         else:
             print('\r\nERROR: Parameters x, y, z need to be between 500 and -500!')
             print('ERROR LOCATION: tello.go()\r\n')
-            operation_done = True
     def curve(self, x1, x2, y1, y2, z1, z2, s):
-        global operation_done
         try:
             x1 = int(x1)
             y1 = int(y1)
@@ -407,22 +347,17 @@ class Tello:
             if 500 >= x1 >= -500 and 500 >= x2 >= -500 and 500 >= y1 >= -500 and 500 >= y2 >= -500 and 500 >= z1 >= -500 and 500 >= z2 >= -500:
                 if 60 >= s >= 10:
                     a = ' '.join(['curve', str(x1), str(x2), str(y1), str(y2), str(z1), str(z2), str(s)])
-                    self.run(a)
-                    print('Curving according to parameters (x1, x2, y1, y2, z1, z2):', x1, x2, y1, y2, z1, z2, 'at the speed of', s, 'cm/s')
+                    self.run(a, ' '.join(['Curving according to parameters (x1, x2, y1, y2, z1, z2):', str(x1), str(x2), str(y1), str(y2), str(z1), str(z2), 'at the speed of', str(s), 'cm/s\r\n']))
                 else:
                     print('\r\nERROR: Parameter \'s\' needs to be between 10 and 60!')
                     print('ERROR LOCATION: tello.curve()\r\n')
-                    operation_done = True
             else:
                 print('\r\nERROR: Parameters x1, x2, y1, y2, z1, z2 need to be between 500 and -500!')
                 print('ERROR LOCATION: tello.curve()\r\n')
-                operation_done = True
         except:
             print('\r\nERROR: Parameters need to be integers!')
             print('ERROR LOCATION: tello.curve()\r\n')
-            operation_done = True
     def goMpad(self, x, y, z, s, mid: str):
-        global operation_done
         global mids
         try:
             x = int(x)
@@ -439,26 +374,20 @@ class Tello:
                 if 100 >= s >= 10:
                     if mid_ok:
                         a = ' '.join(['go', str(x), str(y), str(z), str(s), str(mid)])
-                        self.run(a)
-                        print('Going according to parameters coordinates (x, y, z):', x, y, z, 'at the speed of', s, 'cm/s')
+                        self.run(a, ' '.join(['Going according to parameters coordinates (x, y, z):', str(x), str(y), str(z), 'at the speed of', str(s), 'cm/s\r\n']))
                     else:
                         print('\r\nERROR: Parameter mid needs to be between m1 and m8!')
                         print('ERROR LOCATION: tello.goMpad()\r\n')
-                        operation_done = True
                 else:
                     print('\r\nERROR: Parameter \'s\' needs to be between 10 and 100!')
                     print('ERROR LOCATION: tello.goMpad()\r\n')
-                    operation_done = True
             else:
                 print('\r\nERROR: Parameters x, y, z need to be between 500 and -500!')
                 print('ERROR LOCATION: tello.goMpad()\r\n')
-                operation_done = True
         except:
             print('\r\nERROR: Parameters need to be integers!')
             print('ERROR LOCATION: tello.goMpad()\r\n')
-            operation_done = True
     def curveMpad(self, x1, x2, y1, y2, z1, z2, s, mid):
-        global operation_done
         global mids
         try:
             x1 = int(x1)
@@ -478,24 +407,19 @@ class Tello:
                 if 60 >= s >= 10:
                     if mid_ok:
                         a = ' '.join(['curve', str(x1), str(x2), str(y1), str(y2), str(z1), str(z2), str(s), str(mid)])
-                        self.run(a)
-                        print('Curving according to parameters (x1, x2, y1, y2, z1, z2):', x1, x2, y1, y2, z1, z2, 'at the speed of', s, 'cm/s')
+                        self.run(a, ' '.join(['Curving according to parameters (x1, x2, y1, y2, z1, z2):',str(x1), str(x2), str(y1), str(y2), str(z1), str(z2), 'at the speed of', str(s), 'cm/s\r\n']))
                     else:
                         print('\r\nERROR: Parameter mid needs to be between m1 and m8!')
                         print('ERROR LOCATION: tello.curveMpad()\r\n')
-                        operation_done = True
                 else:
                     print('\r\nERROR: Parameter \'s\' needs to be between 10 and 60!')
                     print('ERROR LOCATION: tello.curveMpad()\r\n')
-                    operation_done = True
             else:
                 print('\r\nERROR: Parameters x1, x2, y1, y2, z1, z2 need to be between 500 and -500!')
                 print('ERROR LOCATION: tello.curveMpad()\r\n')
-                operation_done = True
         except:
             print('\r\nERROR: Parameters need to be integers!')
             print('ERROR LOCATION: tello.curveMpad()\r\n')
-            operation_done = True
     def end(self):
         sock.close()
         print('Exiting...')
