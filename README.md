@@ -14,7 +14,7 @@ To get instructions for the live edition, go to [Tello Live Edition Guide]()
 ```python
 import telloFile # Imports library
 tello = telloFile.Tello() # Sets var tello as the class
-tello.init() # Initializes SDK mode (more below)
+tello.connect() # Initializes SDK mode (more below)
 ```
 *(WRITEHERE.py)*
 
@@ -24,13 +24,13 @@ To see `set` functions, please go [here](SET%26READ_GUIDE.md)
 To see `complex` functions, please go [here](COMPLEX_GUIDE.md)
 To see examples, please go [here]()
 
-### tello.init()
+### tello.connect()
 Initializes SDK mode.
 Must be run as the first function every time the script runs. <br />
 Possible responses: `ok` / `error` <br />
 Example:
 ```python
-tello.init()
+tello.connect()
 ```
 ### tello.takeoff()
 Automatic takeoff. <br />
@@ -48,17 +48,18 @@ Example:
 tello.land()
 ```
 
-### tello.streamon()
+### tello.video_stream_on()
 Enable video stream. <br />
-**Instructions under development! Use at own risk!** <br />
+**Camera functionality under development** <br />
 Possible responses: `ok` / `error` <br />
 Example:
 ```python
 tello.streamon()
 ```
 
-### tello.streamoff()
+### tello.video_stream_off()
 Disable video stream. <br />
+**Camera functionality under development** <br />
 Possible responses: `ok` / `error` <br />
 Example:
 ```python
@@ -73,7 +74,7 @@ Parameters:
 * reason: String, *optional*. Reason for stopping motors.<br />
 Example:
 ```python
-tello.emergency('Hit a wall')
+tello.emergency('The drone has hit a wall')
 ```
 
 ### tello.stop()
@@ -174,23 +175,31 @@ Example:
 tello.flip('l')
 ```
 
-### tello.throwFly()
+### tello.throw_fly()
 Toss the drone in the air within 5 seconds of receiving response to takeoff <br />
 Possible responses: `ok` / `error` <br />
 Example:
 ```python
-tello.throwFly()
+tello.throw_fly()
 ```
 
-### tello.motoron()
+### tello.motor_on()
 Turns on motors (at a slow RPM)<br />
 Possible responses: `ok` / `error` <br />
 Example:
 ```python
-tello.motoron()
+tello.motor_on()
 ```
 
-### tello.throwFly()
+### tello.motor_off()
+Turns off motors (use motor_on() first)<br />
+Possible responses: `ok` / `error` <br />
+Example:
+```python
+tello.motor_off()
+```
+
+### tello.throw_fly()
 Turns off motors (use tello.motoron() first)<br />
 Possible responses: `ok` / `error` <br />
 Example:
@@ -200,13 +209,20 @@ tello.motoroff()
 
 ### tello.end()
 Ends the program. <br />
-Possible responses: `ok` / `error` <br />
+Possible responses: `ok` / Thrown `error` <br />
 Example:
 ```python
 tello.end()
 ```
 
 ## Version history:
+**1.1 Beta:**
+* Implementation of some Tello SDK 3.0 commands
+* Naming changes
+* Functions now return the response
+* In development: camera functions, customization, SDK 3.0 full implementation
+
+
 **1.0 Beta:**
 * Implement most of Tello SDK 2.0 commands
 * Documentation started

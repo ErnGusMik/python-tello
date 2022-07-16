@@ -1,9 +1,8 @@
 #
-# Tello Python3 Control Demo 
+# Ryze TELLO Live Drone Control Program
 #
-# http://www.ryzerobotics.com/
 #
-# 1/1/2018
+# This is not part of the Tello library/module.
 
 import threading 
 import socket

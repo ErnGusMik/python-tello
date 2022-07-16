@@ -5,9 +5,8 @@ If you have any other questions, please make a GitHub issue, and I will try to a
 
 ### What errors are there?
 Errors include:
-* Unknown command: {command}
-* error Run timeout
-* error Motor stop
-* error
-* You need to take off first!
-* (more under investigation)
+* Unknown command: {command} -- this command is not known.
+* error Run timeout -- timeout for the command (eg. could not find mission pad).
+* error Motor stop -- motors have stopped; turn them on first.
+* error -- an error executing the command has happened.
+* You need to take off first! -- take off to execute this command.

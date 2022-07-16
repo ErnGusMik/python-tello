@@ -23,7 +23,7 @@ Example:
 tello.go(10, 50, 10, 50) # Goes 10 cm right, 50 cm forwards, 10 cm up at the speed of 50 cm/s
 ```
 
-### tello.goMpad(x, y, z, s, mid)
+### tello.go_mission_pad(x, y, z, s, mid)
 Goes to *x y z* location at speeed *s*. <br />
 Possible responses: `ok` / `error` <br />
 Parameters:
@@ -53,7 +53,7 @@ Example:
 tello.curveMpad(20, 35, 47, 25, 9, 200, 40) # Curves to x=35 y=25 z=200 through x=20 y=47 z=9 at speed 40 cm/s
 ```
 
-### tello.curveMpad(x1, x2, y1, y2, z1, z2, s, mid)
+### tello.curve_mission_pad(x1, x2, y1, y2, z1, z2, s, mid)
 Curve to the *x2 y2 z2* location, curving through the *x1 y1 z1* location at speeed *s* from the *mid* coordinates.<br />
 **Not always works. Use at own risk!**<br />
 Possible responses: `ok` / `error` <br />

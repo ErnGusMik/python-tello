@@ -11,7 +11,7 @@ To see the Quickstart guide, see the [README.md file](README.md)
 
 ### SET Functions
 
-### tello.setSpeed(x)
+### tello.set_speed(x)
 Sets speed to *x* cm/s. <br />
 Possible responses: `ok` / `error` <br />
 Parameters:
@@ -21,7 +21,7 @@ Example:
 tello.setSpeed(50) # Sets speed to 50 cm/s
 ```
 
-### tello.setWifi(ssid, passw)
+### tello.set_wifi(ssid, passw)
 Sets WiFi SSID to *ssis* and password to *passw*. <br />
 Possible responses: `ok` / `error` <br />
 Parameters:
@@ -32,7 +32,7 @@ Example:
 tello.setWifi('TELLO-XYZ', '1234567') # Sets WiFi SSID to TELLO-XYZ and password to 1234567
 ```
 
-### tello.setMon()
+### tello.set_mission_on()
 Sets Mission Pad detection to on.<br />
 Possible responses: `ok` / `error` <br />
 Example:
@@ -40,7 +40,7 @@ Example:
 tello.setMon() # Turns M. Pad detection on
 ```
 
-### tello.setMoff()
+### tello.set_mission_off()
 Sets Mission pad detection to off. <br />
 Possible responses: `ok` / `error` <br />
 Example:
@@ -48,7 +48,7 @@ Example:
 tello.setMoff() # Turns M. Pad detection off
 ```
 
-### tello.setMdirection(x)
+### tello.set_mission_direction(x)
 Sets Mission Pad detection direction(s). <br />
 Possible responses: `ok` / `error` <br />
 Parameters:
@@ -60,7 +60,7 @@ tello.setMdirection(1) # Mission Pad detection direction: forward only.
 
 ## GET functions
 
-### tello.getSpeed()
+### tello.get_speed()
 Gets current speed <br />
 Possible responses: `10-100` <br />
 Example:
@@ -68,7 +68,7 @@ Example:
 tello.getSpeed() # Gets speed
 ```
 
-### tello.getBattery()
+### tello.get_battery()
 Gets current battery percentage <br />
 Possible responses: `0-100` <br />
 Example:
@@ -76,7 +76,7 @@ Example:
 tello.getBattery() # Gets battery percentage
 ```
 
-### tello.getTime()
+### tello.get_time()
 Gets current flight time <br />
 Possible responses: `"time"` <br />
 Example:
@@ -84,7 +84,7 @@ Example:
 tello.getTime() # Gets flight time
 ```
 
-### tello.getWifi()
+### tello.get_wifi()
 Gets current WiFi SNR <br />
 Possible responses: `"snr"` <br />
 Example:
@@ -92,7 +92,7 @@ Example:
 tello.getWifi() # Gets WiFi SNR
 ```
 
-### tello.getSDK()
+### tello.get_sdk()
 Gets current SDK version <br />
 Possible responses: `"SDK version"` <br />
 Example:
@@ -100,7 +100,7 @@ Example:
 tello.getSDK() # Gets SDK version
 ```
 
-### tello.getSN()
+### tello.get_sn()
 Gets Tello serial number <br />
 Possible responses: `"sn"` <br />
 Example:
