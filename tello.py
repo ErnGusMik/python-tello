@@ -122,10 +122,10 @@ class Tello:
             if self.abort is True:
                 break
         timer.cancel()
-        if self.response == None:
+        if self.response is None:
             print("ERROR: No response to latest command! \n")
             return 'error'
-        if self.abort == False:
+        if self.abort is False:
             response = self.response.decode(encoding='utf-8')
             print(response)
             self.response = None
