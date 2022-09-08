@@ -246,7 +246,7 @@ class Tello:
     def flip(self, x):
         try:
             x = str(x)
-            if x == 'l' or x == 'r' or x == 'f' or x == 'b':
+            if x in ('l', 'r', 'f', 'b'):
                 a = ' '.join(['flip', x])
                 return self.run(a, ' '.join(['Flipping', str(x), ', be careful \r\n']))
             print('\r\nERROR: Parameter must be either f, b, r, or l!')
