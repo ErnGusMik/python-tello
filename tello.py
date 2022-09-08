@@ -1,5 +1,14 @@
 # TODO:
 # !! tello.curveMpad() -- ERROR: RUN TIMEOUT ???
+import sentry_sdk
+sentry_sdk.init(
+    dsn="https://f2fcaa10be4f41958ab756183583ba81@o1400261.ingest.sentry.io/6728983",
+
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces_sample_rate=1.0
+)
 
 
 # Import all needed libraries
@@ -15,97 +24,116 @@ port = 9000
 locaddr = (host,port)
 mids = 'm1 m2 m3 m4 m5 m6 m7 m8'
 
-# Print starting info for the user
-print('_________  ____                  ____ ')
-print('    |      |      |      |      |    |')
-print('    |      |___   |      |      |    |')
-print('    |      |      |      |      |    |')
-print('    |      |____  |____  |____  |____|\r\n')
-print('             Drone Script             ')
-print('             File edition!        \r\n')
-time.sleep(0.5)
-print('            Initializing...           \r\n')
-time.sleep(1)
-
-print('          Checking network...         \r\n')
-time.sleep(1)
-
-
-# Check what network is connected
-if sys.platform == 'win32':
-    wifi = subprocess.check_output(['netsh', 'WLAN', 'show', 'interfaces'])
-    data = wifi.decode('utf-8')
-    wifi_val = 'Not connected'
-    try:
-        for line in data.split('\n'):
-            if "SSID: " in line:
-                key, val = line.split(': ')
-                val = val.strip()
-                wifi_val = val
-    except:
-        print('Error determining network. Continuing anyway.')
-    if "TELLO-" in data or "RMTT-" in data:
-        print('Required network detected.')
-    else:
-        print('Network detected')
-        print('It seems like you have joined a different network. Please make sure that you have joined the TELLO-XXXXX Wi-Fi.')
-        approval = input("Are you sure you want to continue with the script? (y/n)")
-        if approval == 'y':
-            print('\r\n')
-        else:
-            sys.exit()
-elif sys.platform == 'darwin':
-    try:
-        process = subprocess.Popen(['/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport','-I'], stdout=subprocess.PIPE)
-        out, err = process.communicate()
-        process.wait()
-        wifi_val = 'Not connected'
-        for line in out.decode('utf-8').split('\n'):
-            if "SSID: " in line:
-                key, val = line.split(': ')
-                val = val.strip()
-                wifi_val = val
-        if 'TELLO-' not in wifi_val or 'RMTT-' not in wifi_val:
-            print('Network detected:', wifi_val)
-            print('It seems like you have joined a different network. Please make sure that you have joined the TELLO-XXXXX Wi-Fi.')
-            approval = input("Are you sure you want to continue with the script? (y/n)")
-            if approval == 'y':
-                print('\r\n')
-            else:
-                sys.exit()
-        else:
-            print('Required network detected:', wifi_val)
-    except:
-        print('\r\nSeems like there was an error checking the network.')
-        print('Aborting script.\r\n')
-        sys.exit()
-else:
-    print('Could not determine network.')
-    print('Make sure that you are connected to the TELLO-XXXXX or RMTT-XXXXX WiFi networks.')
-
-
-# Print info to the user
-print('         Making UDP socket...         \r\n')
-time.sleep(1)
-
-
-# Create UDP socket
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-tello_address = ('192.168.10.1', 8889)
-sock.bind(locaddr)
-
-
 # Class for all functions for user
 class Tello:
     def __init__(self):
+        global host
+        global port
+        global locaddr
+        global mids
+
+        # Set self variables
+        self.sock = None
+        self.response = None
+        self.tello_address = None
         self.abort = False
         self.response = None
+        self.sent = None
+        self.ip = None
+
+        # Set variables for connection to drone
+        host = ''
+        port = 9000
+        locaddr = (host,port)
+        mids = 'm1 m2 m3 m4 m5 m6 m7 m8'
+
+        # Print starting info for the user
+        print('_________  ____                  ____ ')
+        print('    |      |      |      |      |    |')
+        print('    |      |___   |      |      |    |')
+        print('    |      |      |      |      |    |')
+        print('    |      |____  |____  |____  |____|\r\n')
+        print('             Drone Script             ')
+        print('             File edition!        \r\n')
+        time.sleep(0.5)
+        print('            Initializing...           \r\n')
+        time.sleep(1)
+
+        print('          Checking network...         \r\n')
+        time.sleep(1)
+
+
+        # Check what network is connected
+        if sys.platform == 'win32':
+            wifi = subprocess.check_output(['netsh', 'WLAN', 'show', 'interfaces'])
+            data = wifi.decode('utf-8')
+            wifi_val = 'Not connected'
+            try:
+                for line in data.split('\n'):
+                    if "SSID: " in line:
+                        key, val = line.split(': ')
+                        val = val.strip()
+                        wifi_val = val
+            except:
+                print('Error determining network. Continuing anyway.')
+            if "TELLO-" in data or "RMTT-" in data:
+                print('Required network detected.')
+            else:
+                print('Network detected')
+                print('It seems like you have joined a different network. Please make sure that you have joined the TELLO-XXXXX Wi-Fi.')
+                approval = input("Are you sure you want to continue with the script? (y/n)")
+                if approval == 'y':
+                    print('\r\n')
+                else:
+                    sys.exit()
+        elif sys.platform == 'darwin':
+            try:
+                process = subprocess.Popen(['/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport','-I'], stdout=subprocess.PIPE)
+                out, err = process.communicate()
+                process.wait()
+                wifi_val = 'Not connected'
+                for line in out.decode('utf-8').split('\n'):
+                    if "SSID: " in line:
+                        key, val = line.split(': ')
+                        val = val.strip()
+                        wifi_val = val
+                if 'TELLO-' not in wifi_val or 'RMTT-' not in wifi_val:
+                    print('Network detected:', wifi_val)
+                    print('It seems like you have joined a different network. Please make sure that you have joined the TELLO-XXXXX Wi-Fi.')
+                    approval = input("Are you sure you want to continue with the script? (y/n)")
+                    if approval == 'y':
+                        print('\r\n')
+                    else:
+                        sys.exit()
+                else:
+                    print('Required network detected:', wifi_val)
+            except:
+                print('\r\nSeems like there was an error checking the network.')
+                print('Aborting script.\r\n')
+                sys.exit()
+        else:
+            print('Could not determine network.')
+            print('Make sure that you are connected to the TELLO-XXXXX or RMTT-XXXXX WiFi networks.')
+
+
+        # Print info to the user
+        print('         Making UDP socket...         \r\n')
+        time.sleep(1)
+
+
+        # Create UDP socket
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.tello_address = ('192.168.10.1', 8889)
+        self.sock.bind(locaddr)
+
         self.recvThread = threading.Thread(target=self.receive)
         self.recvThread.start()
+
+    # Function to receive commands from the drone
     def receive(self):
         while True:
             try:
-                self.response, ip = sock.recvfrom(256)
+                self.response, self.ip = self.sock.recvfrom(256)
             except Exception:
                 break
     def run(self, string, message="No message "):
@@ -114,7 +142,7 @@ class Tello:
         # Encode the message in the utf-8 encoding
         string = string.encode(encoding='utf-8')
         # Send the encoded message to the Tello
-        sent = sock.sendto(string, tello_address)
+        self.sent = self.sock.sendto(string, self.tello_address)
         print(message)
         self.response = None
         timer.start()
@@ -418,6 +446,6 @@ class Tello:
             print('\r\nERROR: Parameters need to be integers!')
             print('ERROR LOCATION: tello.curveMpad()\r\n')
     def end(self):
-        sock.close()
+        self.sock.close()
         print('Exiting...')
         return 'ok'
