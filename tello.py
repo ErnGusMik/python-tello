@@ -265,7 +265,8 @@ class Tello:
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.setSpeed()\r\n')
-    def set_wifi(self, ssid, passw):
+    @staticmethod
+    def set_wifi(ssid, passw):
         try:
             if ssid and passw:
                 print('ERROR: 403 -- Operation Denied')
@@ -398,7 +399,8 @@ class Tello:
         except:
             print('\r\nERROR: Parameters need to be integers!')
             print('ERROR LOCATION: tello.curveMpad()\r\n')
-    def end(self):
+    @staticmethod
+    def end():
         sock.close()
         print('Exiting...')
         return 'ok'
