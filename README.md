@@ -216,6 +216,13 @@ tello.end()
 ```
 
 ## Version history:
+**1.1.2 Alpha**
+* Potential bug fixes
+* Security issue fix
+* Performance optimizations
+* Remodel of __init__
+
+
 **1.1 Beta:**
 * Implementation of some Tello SDK 3.0 commands
 * Naming changes
