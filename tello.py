@@ -368,7 +368,6 @@ class Tello:
             print('\r\nERROR: Parameters need to be integers!')
             print('ERROR LOCATION: tello.curve()\r\n')
     def go_mission_pad(self, x, y, z, s, mid: str):
-        global mids
         try:
             x = int(x)
             y = int(y)
@@ -397,7 +396,6 @@ class Tello:
             print('\r\nERROR: Parameters need to be integers!')
             print('ERROR LOCATION: tello.goMpad()\r\n')
     def curve_mission_pad(self, x1, x2, y1, y2, z1, z2, s, mid):
-        global mids
         try:
             x1 = int(x1)
             y1 = int(y1)
