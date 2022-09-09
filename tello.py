@@ -245,7 +245,7 @@ class Tello:
             print('\r\nERROR: Parameter must be between 1 and 360')
             print('ERROR LOCATION: tello.ccw()\r\n')
     def flip(self, x: int):
-        if x == 'l' or x == 'r' or x == 'f' or x == 'b':
+        if x in ('l', 'r', 'f', 'b'):
             a = ' '.join(['flip', x])
             return self.run(a, ' '.join(['Flipping', str(x), ', be careful \r\n']))
         else:
