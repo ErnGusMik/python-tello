@@ -158,8 +158,7 @@ class Tello:
             print(response)
             self.response = None
             return response
-        else:
-            return 'error'
+        return 'error'
     def _set_abort(self):
         self.abort = True
     # SDK 3.0 Commands
@@ -193,18 +192,16 @@ class Tello:
             a = ' '.join(['up', str(x)])
             message = ' '.join(['Ascending to', str(x), 'cm from the ground \r\n'])
             return self.run(a, message)
-        else:
-            print('\r\nERROR: Parameter must be between 20 and 500')
-            print('ERROR LOCATION: tello.down()\r\n')
+        print('\r\nERROR: Parameter must be between 20 and 500')
+        print('ERROR LOCATION: tello.down()\r\n')
     def down(self, x):
         try:
             x = int(x)
             if x >= 20 and x <= 500:
                 a = ' '.join(['down', str(x)])
                 return self.run(a, ' '.join(['Descending to', str(x), 'cm from the ground \r\n']))
-            else:
-                print('\r\nERROR: Parameter must be between 20 and 500\r\n')
-                print('ERROR LOCATION: tello.down()\r\n')
+            print('\r\nERROR: Parameter must be between 20 and 500\r\n')
+            print('ERROR LOCATION: tello.down()\r\n')
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.down()\r\n')
@@ -214,9 +211,8 @@ class Tello:
             if x >= 20 and x <= 500:
                 a = ' '.join(['left', str(x)])
                 return self.run(a, ' '.join(['Moving left', str(x), 'cm, keep clear of drone\'s path \r\n']))
-            else:
-                print('\r\nERROR: Parameter must be between 20 and 500')
-                print('ERROR LOCATION: tello.left()\r\n')
+            print('\r\nERROR: Parameter must be between 20 and 500')
+            print('ERROR LOCATION: tello.left()\r\n')
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.left()\r\n')
@@ -226,9 +222,8 @@ class Tello:
             if x >= 20 and x <= 500:
                 a = ' '.join(['right', str(x)])
                 return self.run(a, ' '.join(['Moving right', str(x), 'cm, keep clear of drone\'s path \r\n']))
-            else:
-                print('\r\nERROR: Parameter must be between 20 and 500')
-                print('ERROR LOCATION: tello.right()\r\n')
+            print('\r\nERROR: Parameter must be between 20 and 500')
+            print('ERROR LOCATION: tello.right()\r\n')
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.right()\r\n')
@@ -238,9 +233,8 @@ class Tello:
             if x >= 20 and x <= 500:
                 a = ' '.join(['forward', str(x)])
                 return self.run(a, ' '.join(['Moving forward', str(x), 'cm, keep clear of drone\'s path \r\n']))
-            else:
-                print('\r\nERROR: Parameter must be between 20 and 500')
-                print('ERROR LOCATION: tello.forward()\r\n')
+            print('\r\nERROR: Parameter must be between 20 and 500')
+            print('ERROR LOCATION: tello.forward()\r\n')
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.forward()\r\n')
@@ -250,9 +244,8 @@ class Tello:
             if x >= 20 and x <= 500:
                 a = ' '.join(['back', str(x)])
                 return self.run(a, ' '.join(['Moving forward', str(x), 'cm, keep clear of drone\'s path \r\n']))
-            else:
-                print('\r\nERROR: Parameter must be between 20 and 500')
-                print('ERROR LOCATION: tello.back()\r\n')
+            print('\r\nERROR: Parameter must be between 20 and 500')
+            print('ERROR LOCATION: tello.back()\r\n')
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.back()\r\n')
@@ -262,9 +255,8 @@ class Tello:
             if x >= 1 and x <= 360:
                 a = ' '.join(['cw', str(x)])
                 return self.run(a, ' '.join(['Rotating clockwise for', str(x), 'degrees \r\n']))
-            else:
-                print('\r\nERROR: Parameter must be between 1 and 360')
-                print('ERROR LOCATION: tello.cw()\r\n')
+            print('\r\nERROR: Parameter must be between 1 and 360')
+            print('ERROR LOCATION: tello.cw()\r\n')
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.cw()\r\n')
@@ -274,9 +266,8 @@ class Tello:
             if x >= 1 and x <= 360:
                 a = ' '.join(['ccw', str(x)])
                 return self.run(a, ' '.join(['Rotating counter-clockwise for', str(x), 'degrees \r\n']))
-            else:
-                print('\r\nERROR: Parameter must be between 1 and 360')
-                print('ERROR LOCATION: tello.ccw()\r\n')
+            print('\r\nERROR: Parameter must be between 1 and 360')
+            print('ERROR LOCATION: tello.ccw()\r\n')
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.ccw()\r\n')
@@ -286,9 +277,8 @@ class Tello:
             if x == 'l' or x == 'r' or x == 'f' or x == 'b':
                 a = ' '.join(['flip', x])
                 return self.run(a, ' '.join(['Flipping', str(x), ', be careful \r\n']))
-            else:
-                print('\r\nERROR: Parameter must be either f, b, r, or l!')
-                print('ERROR LOCATION: tello.flip()\r\n')
+            print('\r\nERROR: Parameter must be either f, b, r, or l!')
+            print('ERROR LOCATION: tello.flip()\r\n')
         except:
             print('\r\nERROR: Parameter needs to be a letter!')
             print('ERROR LOCATION: tello.flip()\r\n')
@@ -298,9 +288,8 @@ class Tello:
             if x >= 1 and x <= 100:
                 a = ' '.join(['speed', str(x)])
                 return self.run(a, ' '.join(['Setting speed to', str(x), 'cm/s \r\n']))
-            else:
-                print('\r\nERROR: Parameter must be between 10 and 100')
-                print('ERROR LOCATION: tello.setSpeed()\r\n')
+            print('\r\nERROR: Parameter must be between 10 and 100')
+            print('ERROR LOCATION: tello.setSpeed()\r\n')
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.setSpeed()\r\n')
@@ -311,9 +300,8 @@ class Tello:
                 print('ERROR LOCATION: tello.setWifi()')
                 print('ERROR: Figure out another way.  :)\r\n')
                 return 'error'
-            else:
-                print('\r\nERROR: Parameters must be strings!')
-                print('ERROR LOCATION: tello.setWifi()\r\n')
+            print('\r\nERROR: Parameters must be strings!')
+            print('ERROR LOCATION: tello.setWifi()\r\n')
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.setWifi()\r\n')
@@ -327,9 +315,8 @@ class Tello:
             if x >= 0 and x <= 3:
                 a = ' '.join(['mdirection', str(x)])
                 return self.run(a, ' '.join(['Setting Mission Pad Detection to setting', str(x), '\r\n']))
-            else:
-                print('\r\nERROR: Parameter must be between 0 and 3')
-                print('ERROR LOCATION: tello.setMdircetion()\r\n')
+            print('\r\nERROR: Parameter must be between 0 and 3')
+            print('ERROR LOCATION: tello.setMdircetion()\r\n')
         except:
             print('\r\nERROR: Parameter needs to be an integer!')
             print('ERROR LOCATION: tello.setMdirection()\r\n')
@@ -354,9 +341,8 @@ class Tello:
             if 100 >= s >= 10:
                 a = ' '.join(['go', str(x), str(y), str(z), str(s)])
                 return self.run(a, ' '.join(['Going according to parameters coordinates (x, y, z):', str(x), str(y), str(z), 'at the speed of', str(s), 'cm/s\r\n']))
-            else:
-                print('\r\nERROR: Parameter \'s\' needs to be between 10 and 100!')
-                print('ERROR LOCATION: tello.go()\r\n')
+            print('\r\nERROR: Parameter \'s\' needs to be between 10 and 100!')
+            print('ERROR LOCATION: tello.go()\r\n')
         else:
             print('\r\nERROR: Parameters x, y, z need to be between 500 and -500!')
             print('ERROR LOCATION: tello.go()\r\n')
@@ -373,9 +359,8 @@ class Tello:
                 if 60 >= s >= 10:
                     a = ' '.join(['curve', str(x1), str(x2), str(y1), str(y2), str(z1), str(z2), str(s)])
                     return self.run(a, ' '.join(['Curving according to parameters (x1, x2, y1, y2, z1, z2):', str(x1), str(x2), str(y1), str(y2), str(z1), str(z2), 'at the speed of', str(s), 'cm/s\r\n']))
-                else:
-                    print('\r\nERROR: Parameter \'s\' needs to be between 10 and 60!')
-                    print('ERROR LOCATION: tello.curve()\r\n')
+                print('\r\nERROR: Parameter \'s\' needs to be between 10 and 60!')
+                print('ERROR LOCATION: tello.curve()\r\n')
             else:
                 print('\r\nERROR: Parameters x1, x2, y1, y2, z1, z2 need to be between 500 and -500!')
                 print('ERROR LOCATION: tello.curve()\r\n')
@@ -400,9 +385,8 @@ class Tello:
                     if mid_ok:
                         a = ' '.join(['go', str(x), str(y), str(z), str(s), str(mid)])
                         return self.run(a, ' '.join(['Going according to parameters coordinates (x, y, z):', str(x), str(y), str(z), 'at the speed of', str(s), 'cm/s\r\n']))
-                    else:
-                        print('\r\nERROR: Parameter mid needs to be between m1 and m8!')
-                        print('ERROR LOCATION: tello.goMpad()\r\n')
+                    print('\r\nERROR: Parameter mid needs to be between m1 and m8!')
+                    print('ERROR LOCATION: tello.goMpad()\r\n')
                 else:
                     print('\r\nERROR: Parameter \'s\' needs to be between 10 and 100!')
                     print('ERROR LOCATION: tello.goMpad()\r\n')
@@ -433,9 +417,8 @@ class Tello:
                     if mid_ok:
                         a = ' '.join(['curve', str(x1), str(x2), str(y1), str(y2), str(z1), str(z2), str(s), str(mid)])
                         return self.run(a, ' '.join(['Curving according to parameters (x1, x2, y1, y2, z1, z2):',str(x1), str(x2), str(y1), str(y2), str(z1), str(z2), 'at the speed of', str(s), 'cm/s\r\n']))
-                    else:
-                        print('\r\nERROR: Parameter mid needs to be between m1 and m8!')
-                        print('ERROR LOCATION: tello.curveMpad()\r\n')
+                    print('\r\nERROR: Parameter mid needs to be between m1 and m8!')
+                    print('ERROR LOCATION: tello.curveMpad()\r\n')
                 else:
                     print('\r\nERROR: Parameter \'s\' needs to be between 10 and 60!')
                     print('ERROR LOCATION: tello.curveMpad()\r\n')
