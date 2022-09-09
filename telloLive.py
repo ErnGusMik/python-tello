@@ -119,8 +119,7 @@ while True:
             if endmsg == "y":
                 sock.close()
                 break
-            else:
-                print('OK\r\n')
+            print('OK\r\n')
         # Help functionality (when typed 'help')
         elif msg == 'help':
             print('\r\nSimple functions:')
