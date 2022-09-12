@@ -1,10 +1,7 @@
-#
-# Ryze TELLO Live Drone Control Program
-#
-#
-# This is not part of the Tello library/module.
+# Support for this has ended. This will no lonegr be updated.
+# A new real-time Tello control script is coming soon
 
-import threading 
+import threading
 import socket
 import sys
 import time
@@ -32,7 +29,10 @@ time.sleep(1)
 
 
 try:
-    process = subprocess.Popen(['/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport', '-I'], stdout=subprocess.PIPE)
+    process = subprocess.Popen([
+        '/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport',
+        '-I'
+        ], stdout=subprocess.PIPE)
     out, err = process.communicate()
     process.wait()
     wifi_val = {}
@@ -54,8 +54,7 @@ try:
         print('No errors. \r\n')
 except subprocess.SubprocessError:
     print('\r\nSeems like there was an error checking the network.')
-    print('Aborting script.\r\n')
-    sys.exit()
+    print('Continuing.\r\n')
 
 
 print('         Making UDP socket...         \r\n')
@@ -70,9 +69,10 @@ tello_address = ('192.168.10.1', 8889)
 sock.bind(locaddr)
 
 
-#Receiving Functionality
+# Receiving Functionality
 def recv():
-    while True: 
+    """Receive the response from Tello."""
+    while True:
         try:
             data, _ = sock.recvfrom(1518)
             data = data.decode(encoding='utf-8')
@@ -84,7 +84,7 @@ def recv():
                 print('Next time, try writing something valid!')
                 print(data)
         except Exception:
-            print ('\nExiting...\n')
+            print('\nExiting...\n')
             break
 
 
@@ -95,12 +95,12 @@ print("\r\nIMPORTANT! Do", '\033[1m' + 'not' + '\033[0m', 'type until a response
 print("\r\nTo begin, type", '\033[1m' + 'command' + '\033[0m: \r\n')
 
 
-#recvThread create
+# recvThread create
 recvThread = threading.Thread(target=recv)
 recvThread.start()
 
 
-#Main loop: what happens repeatedly
+# Main loop: what happens repeatedly
 while True:
     try:
         msg = input("")
@@ -110,7 +110,7 @@ while True:
 
         # Ending functionality (when typed 'end')
         if msg == 'end':
-            print ('...')
+            print('...')
             print('Make sure the drone has fully landed! \r\n')
             endmsg = input("Continue? (y/n)")
             if endmsg == "y":
@@ -181,9 +181,9 @@ while True:
             print('\r\nTo view set, read and hard functions, type \'help set\', \'help read\' or \'help hard\' \r\n\r\n')
         else:
             # Send data
-            msg = msg.encode(encoding="utf-8") 
+            msg = msg.encode(encoding="utf-8")
             sent = sock.sendto(msg, tello_address)
     except KeyboardInterrupt:
-        print ('\n . . .\n')
-        sock.close()  
+        print('\n . . .\n')
+        sock.close()
         break
