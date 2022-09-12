@@ -12,7 +12,7 @@ import subprocess
 
 host = ''
 port = 9000
-locaddr = (host,port)
+locaddr = (host, port)
 
 
 # Print general info for the user
@@ -32,7 +32,7 @@ time.sleep(1)
 
 
 try:
-    process = subprocess.Popen(['/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport','-I'], stdout=subprocess.PIPE)
+    process = subprocess.Popen(['/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport', '-I'], stdout=subprocess.PIPE)
     out, err = process.communicate()
     process.wait()
     wifi_val = {}
@@ -52,7 +52,7 @@ try:
     else:
         print('Network detected:', wifi_val)
         print('No errors. \r\n')
-except:
+except subprocess.SubprocessError:
     print('\r\nSeems like there was an error checking the network.')
     print('Aborting script.\r\n')
     sys.exit()
@@ -74,7 +74,7 @@ sock.bind(locaddr)
 def recv():
     while True: 
         try:
-            data, server = sock.recvfrom(1518)
+            data, _ = sock.recvfrom(1518)
             data = data.decode(encoding='utf-8')
             if data == 'ok':
                 print('Operation successful\r\n')
@@ -88,13 +88,11 @@ def recv():
             break
 
 
-
 print("\r\nTo view all available functions, type", '\033[1m' + 'help' + '\033[0m')
 print("\r\nTo quit the script, type", '\033[1m' + 'end' + '\033[0m')
 print("\r\n(For emergencies) To immediately quit the script, press", '\033[1m' + 'Ctrl + C' + '\033[0m')
 print("\r\nIMPORTANT! Do", '\033[1m' + 'not' + '\033[0m', 'type until a response is received!')
 print("\r\nTo begin, type", '\033[1m' + 'command' + '\033[0m: \r\n')
-
 
 
 #recvThread create

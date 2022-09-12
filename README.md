@@ -1,7 +1,7 @@
 # Python Tello
 This is a library for easy usage of the Ryze Tello drone education edition. <br />
 **Current Version:**
-*2.0 Alpha* <br />
+*2.0.1 Alpha* <br />
 SDK 3.0 is **here**! Documentation and testing in progress!
 ## Requirements:
 * Python installed on your system or as a VS Code extension
@@ -216,6 +216,9 @@ tello.end()
 ```
 
 ## Version history:
+**2.0.1 Alpha**
+* Small fixes
+
 **2.0 Alpha**
 * All new Tello SDK 3.0 commands implemented!
 * Small potential bug/style fixes
