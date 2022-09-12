@@ -72,6 +72,7 @@ sock.bind(locaddr)
 
 #Receiving Functionality
 def recv():
+    count = 0
     while True: 
         try:
             data, server = sock.recvfrom(1518)
@@ -118,7 +119,8 @@ while True:
             if endmsg == "y":
                 sock.close()
                 break
-            print('OK\r\n')
+            else:
+                print('OK\r\n')
         # Help functionality (when typed 'help')
         elif msg == 'help':
             print('\r\nSimple functions:')
