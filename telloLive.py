@@ -72,7 +72,6 @@ sock.bind(locaddr)
 
 #Receiving Functionality
 def recv():
-    count = 0
     while True: 
         try:
             data, server = sock.recvfrom(1518)

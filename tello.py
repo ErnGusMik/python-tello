@@ -1,5 +1,7 @@
 # TODO:
 # !! tello.curveMpad() -- ERROR: RUN TIMEOUT ???
+from operator import contains
+import string
 import sentry_sdk
 sentry_sdk.init(
     dsn="https://f2fcaa10be4f41958ab756183583ba81@o1400261.ingest.sentry.io/6728983",
@@ -18,19 +20,9 @@ import time
 import threading
 import subprocess
 
-# Set variables for connection to drone
-host = ''
-port = 9000
-locaddr = (host,port)
-mids = 'm1 m2 m3 m4 m5 m6 m7 m8'
-
 # Class for all functions for user
 class Tello:
     def __init__(self, prints=True):
-        global host
-        global port
-        global locaddr
-        global mids
 
         # Set self variables
         self.sock = None
@@ -45,7 +37,7 @@ class Tello:
         host = ''
         port = 9000
         locaddr = (host,port)
-        mids = 'm1 m2 m3 m4 m5 m6 m7 m8'
+        self.mids = 'm1 m2 m3 m4 m5 m6 m7 m8'
 
         # Print starting info for the user
         print('_________  ____                  ____ ')
@@ -68,14 +60,11 @@ class Tello:
             wifi = subprocess.check_output(['/windows/system32/netsh', 'WLAN', 'show', 'interfaces'])
             data = wifi.decode('utf-8')
             wifi_val = 'Not connected'
-            try:
-                for line in data.split('\n'):
-                    if "SSID: " in line:
-                        key, val = line.split(': ')
-                        val = val.strip()
-                        wifi_val = val
-            except:
-                print('Error determining network. Continuing anyway.')
+            for line in data.split('\n'):
+                if "SSID: " in line:
+                    key, val = line.split(': ')
+                    val = val.strip()
+                    wifi_val = val
             if "TELLO-" in data or "RMTT-" in data:
                 print('Required network detected.')
             else:
@@ -87,30 +76,25 @@ class Tello:
                 else:
                     sys.exit()
         elif sys.platform == 'darwin':
-            try:
-                process = subprocess.Popen(['/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport','-I'], stdout=subprocess.PIPE)
-                out, err = process.communicate()
-                process.wait()
-                wifi_val = 'Not connected'
-                for line in out.decode('utf-8').split('\n'):
-                    if "SSID: " in line:
-                        key, val = line.split(': ')
-                        val = val.strip()
-                        wifi_val = val
-                if 'TELLO-' not in wifi_val or 'RMTT-' not in wifi_val:
-                    print('Network detected:', wifi_val)
-                    print('It seems like you have joined a different network. Please make sure that you have joined the TELLO-XXXXX Wi-Fi.')
-                    approval = input("Are you sure you want to continue with the script? (y/n)")
-                    if approval == 'y':
-                        print('\r\n')
-                    else:
-                        sys.exit()
+            process = subprocess.Popen(['/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport','-I'], stdout=subprocess.PIPE)
+            out, err = process.communicate()
+            process.wait()
+            wifi_val = 'Not connected'
+            for line in out.decode('utf-8').split('\n'):
+                if "SSID: " in line:
+                    key, val = line.split(': ')
+                    val = val.strip()
+                    wifi_val = val
+            if 'TELLO-' not in wifi_val or 'RMTT-' not in wifi_val:
+                print('Network detected:', wifi_val)
+                print('It seems like you have joined a different network. Please make sure that you have joined the TELLO-XXXXX Wi-Fi.')
+                approval = input("Are you sure you want to continue with the script? (y/n)")
+                if approval == 'y':
+                    print('\r\n')
                 else:
-                    print('Required network detected:', wifi_val)
-            except:
-                print('\r\nSeems like there was an error checking the network.')
-                print('Aborting script.\r\n')
-                sys.exit()
+                    sys.exit()
+            else:
+                print('Required network detected:', wifi_val)
         else:
             print('Could not determine network.')
             print('Make sure that you are connected to the TELLO-XXXXX or RMTT-XXXXX WiFi networks.')
@@ -150,8 +134,7 @@ class Tello:
             if self.abort is True:
                 break
         timer.cancel()
-        if self.response is None:
-            print("ERROR: No response to latest command! \n")
+        if self.response == None:
             return 'error'
         if self.abort is False:
             response = self.response.decode(encoding='utf-8')
@@ -168,6 +151,50 @@ class Tello:
         return self.run('motoron', 'Turning on motors\r\n')
     def motor_off(self):
         return self.run('motoroff', 'Turning off motors\r\n')
+    def reboot(self):
+        test = self.run('reboot', 'Rebooting\r\n')
+        if test == 'error':
+            return 'error'
+        return 'ok'
+    # SDK 3.0 SET Commands
+    def rc(self, roll: int = 0, pitch: int = 0, yaw: int = 0, throttle: int = 0):
+        if 100 >= roll >= -100 and 100 >= pitch >= -100 and 100 >= yaw >= -100 and 100 >= throttle >= -100:
+            self.run('rc %s %s %s %s' % (roll, pitch, yaw, throttle), 'Setting lever force values\r\n')
+            return 'ok'
+        print('ERROR: Parameters must be between -100 and 100')
+        print('ERROR LOCATION: tello.rc()')
+        return 'error'
+    def ap(self, ssid: str, password: str):
+        return self.run('ap %s %s' % (ssid, password), 'Connecting to access point, then rebooting\r\n')
+    def set_wifi_channel(self, channel: int):
+        return self.run('wifi %s' % channel, 'Setting Wi-Fi channel to ' + channel + '\r\n')
+    def set_port(self, info_port: int, video_port: int):
+        if 1025 <= info_port <= 65535 and 1025 <= video_port <= 65535:
+            ports = self.run('port %s %s' % (info_port, video_port), 'Setting new ports for status and video\r\n')
+            if ports == 'ok':
+                self.tello_address = ('192.168.10.1', info_port)
+                #
+                # SET VIDEO PORT
+                #
+                return 'ok'
+            return 'error'
+        return 'error'
+    def set_fps(self, fps: str):
+        if fps in ('h', 'm', 'l', 'high', 'medium', 'low'):
+            return self.run('setfps %s' % fps, 'Setting FPS to ' + fps + '\r\n')
+        return 'error'
+    def set_bitrate(self, bitrate: int):
+        if 1 <= bitrate <= 5:
+            return self.run('setbitrate %s' % bitrate, 'Setting bitrate to ' + bitrate + ' Mbps\r\n')
+        elif bitrate == 0:
+            return self.run('setbitrate %s' % bitrate, 'Setting bitrate to auto\r\n')
+        return 'error'
+    def set_resolution(self, resolution: str):
+        if resolution in ('h', 'l', 'high', 'low'):
+            return self.run('setresolution %s' % resolution, 'Setting resolution to ' + resolution + '\r\n')
+        return 'error'
+    def set_rmtt_wifi(self, ssid: str, password: str):
+        return self.run('multwifi %s %s' % (ssid, password), 'Setting RMTT SSID and password to %s %s\r\n' % (ssid, password))
     # SDK 2.0 Commands
     def connect(self):
         return self.run('command', '\r\nEnabling SDK mode\r\n')
@@ -248,7 +275,7 @@ class Tello:
         print('\r\nERROR: Parameter must be between 10 and 100')
         print('ERROR LOCATION: tello.setSpeed()\r\n')
     def set_wifi(self, ssid: str, passw: str):
-        return self.run(''.join(['wifi', ssid, ' ', passw]), ''.join(['Setting wifi to', ssid, 'with password', passw, '\r\n']))
+        return self.run(' '.join(['wifi', ssid, passw]), ' '.join(['Setting wifi to', ssid, 'with password', passw, 'then rebooting\r\n']))
     def set_mission_on(self):
         return self.run('mon', 'Enabling Mission Pad detection\r\n')
     def set_mission_off(self):
@@ -257,20 +284,36 @@ class Tello:
         if x >= 0 and x <= 3:
             a = ' '.join(['mdirection', str(x)])
             return self.run(a, ' '.join(['Setting Mission Pad Detection to setting', str(x), '\r\n']))
-        print('\r\nERROR: Parameter must be between 0 and 3')
-        print('ERROR LOCATION: tello.setMdircetion()\r\n')
+        else:
+            print('\r\nERROR: Parameter must be between 0 and 3')
+            print('ERROR LOCATION: tello.setMdircetion()\r\n')
+
+    # GET Commands
     def get_speed(self):
-        return self.run('speed?', 'Obtaining current speed: \r\n')
+        return self.run('speed?', 'Obtaining current speed \r\n')
     def get_battery(self):
-        return self.run('battery?', 'Obtaining battery level: \r\n')
+        return self.run('battery?', 'Obtaining battery level \r\n')
     def get_time(self):
-        return self.run('time?', 'Obtaining current flight time: \r\n')
+        return self.run('time?', 'Obtaining current flight time \r\n')
     def get_wifi(self):
-        return self.run('wifi?', 'Obtaining WiFi SNR: \r\n')
+        return self.run('wifi?', 'Obtaining WiFi SNR \r\n')
     def get_sdk(self):
-        return self.run('sdk?', 'Obtaining Tello SDK Version: \r\n')
+        return self.run('sdk?', 'Obtaining Tello SDK Version \r\n')
     def get_sn(self):
-        return self.run('sn?', 'Obtaining Tello serial number: \r\n')
+        return self.run('sn?', 'Obtaining Tello serial number \r\n')
+    #SDK 3.0 GET Commands
+    def get_hardware(self):
+        return self.run('hardware?', 'Obtaining  hardware status \r\n')
+    def get_wifi_version(self):
+        return self.run('wifi?', 'Obtaining RMTT WiFi version \r\n')
+    def get_ap(self):
+        return self.run('ap?', 'Obtaining RMTT Access Point SSID and password \r\n')
+    def get_ssid(self):
+        return self.run('ssid?', 'Obtaining RMTT WiFi SSID and password (if any) \r\n')
+    
+
+
+    # COMPLEX Commands
     def go(self, x: int, y: int, z: int, s: int):
         if 500 >= x >= -500 and 500 >= y >= -500 and 500 >= z >= -500:
             if 100 >= s >= 10:
@@ -292,9 +335,8 @@ class Tello:
             print('\r\nERROR: Parameters x1, x2, y1, y2, z1, z2 need to be between 500 and -500!')
             print('ERROR LOCATION: tello.curve()\r\n')
     def go_mission_pad(self, x: int, y: int, z: int, s: int, mid: str):
-        global mids
         mid_ok = False
-        for id in mids.split(' '):
+        for id in self.mids.split(' '):
             if id == mid:
                 mid_ok = True
                 break
@@ -312,9 +354,8 @@ class Tello:
             print('\r\nERROR: Parameters x, y, z need to be between 500 and -500!')
             print('ERROR LOCATION: tello.goMpad()\r\n')
     def curve_mission_pad(self, x1: int, x2: int, y1: int, y2: int, z1: int, z2: int, s: int, mid: str):
-        global mids
         mid_ok = False
-        for id in mids.split(' '):
+        for id in self.split(' '):
             if id == mid:
                 mid_ok = True
                 break
@@ -331,6 +372,89 @@ class Tello:
         else:
             print('\r\nERROR: Parameters x1, x2, y1, y2, z1, z2 need to be between 500 and -500!')
             print('ERROR LOCATION: tello.curveMpad()\r\n')
+    #
+    # SDK 3.0 DISPLAY Commands
+    #
+    def set_light_color(self, r: int, g: int, b: int):
+        if 255 >= r >= 0 and 255 >= g >= 0 and 255 >= b >= 0:
+            a = ' '.join(['EXT led', str(r), str(g), str(b)])
+            return self.run(a, ' '.join(['Setting RMTT light color to (r, g, b):', str(r), str(g), str(b), '\r\n']))
+        print('\r\nERROR: Parameters r, g, b need to be between 255 and 0!')
+        print('ERROR LOCATION: tello.set_light_color()\r\n')
+        return 'led error'
+    def set_light_pulse(self, r: int, g: int, b: int, p: float or int):
+        if 255 >= r >= 0 and 255 >= g >= 0 and 255 >= b >= 0 and 2.5 >= p >= 0.1:
+            a = ' '.join(['EXT led', str(p), str(r), str(g), str(b)])
+            return self.run(a, ' '.join(['Setting RMTT light color to (r, g, b):', str(r), str(g), str(b), 'with pulse of', str(p), 'Hz\r\n']))
+        print('\r\nERROR: Parameters r, g, b need to be between 255 and 0!')
+        print('ERROR LOCATION: tello.set_light_pulse()\r\n')
+        return 'led error'
+    def set_light_flash(self, r1: int, g1: int, b1: int, r2: int, g2: int, b2: int, f: float or int):
+        if 255 >= r1 >= 0 and 255 >= g1 >= 0 and 255 >= b1 >= 0 and 255 >= r2 >= 0 and 255 >= g2 >= 0 and 255 >= b2 >= 0 and 2.5 >= f >= 0.1:
+            a = ' '.join(['EXT led', str(f), str(r1), str(g1), str(b1), str(r2), str(g2), str(b2)])
+            return self.run(a, ' '.join(['Setting RMTT light color to (r1, g1, b1):', str(r1), str(g1), str(b1), 'and (r2, g2, b2):', str(r2), str(g2), str(b2), 'with flash of', str(f), 'Hz\r\n']))
+        print('\r\nERROR: Parameters r1, g1, b1, r2, g2, b2 need to be between 255 and 0, f between 0.1 and 10!')
+        print('ERROR LOCATION: tello.set_light_flash()\r\n')
+        return 'led error'
+    def set_display_pattern(self, pattern: str):
+        if pattern.split('') in ('r', 'b', 'p', '0') and 64 > pattern.length > 1:
+            a = ' '.join(['EXT mled g', str(pattern)])
+            return self.run(a, ' '.join(['Setting RMTT display pattern to:', str(pattern), '\r\n']))
+        print('\r\nERROR: Parameter pattern needs to contain only r, b, p and 0, and must be between 1 and 64 characters!')
+        print('ERROR LOCATION: tello.set_display_pattern()\r\n')
+        return 'mled error'
+    #
+    # AWAITING TESTING
+    #
+    def set_display_string_direction(self, direction: str, color: str, frame_rate: float or int, pattern: str):
+        if direction.split('') in ('l', 'r', 'u', 'd') and color in ('r', 'b', 'p') and 10 >= frame_rate >= 0.1 and 70 > pattern.length > 1 and pattern.split('') in ('r', 'b', 'p', '0'):
+            a = ' '.join(['EXT mled', str(direction), str(color), str(frame_rate), str(pattern)])
+            return self.run(a, ' '.join(['Setting RMTT string display direction to:', str(direction), 'with color:', str(color), 'and frame rate:', str(frame_rate), 'and pattern:', str(pattern), '\r\n']))
+        print('\r\nERROR: Parameter pattern needs to contain only r, b, p and 0, and must be between 1 and 70 characters, color must contain r, b, or p, direction can contain only u, d, l, r, and frame rate can be a int or float between 0.1 and 10!')
+        print('ERROR LOCATION: tello.set_display_string_direction()\r\n')
+        return 'mled error'
+    #
+    # AWAITING TESTING
+    #
+    def set_display_image_direction(self, direction: str, color: str, frame_rate: float or int, pattern: str):
+        if direction.split('') in ('l', 'r', 'u', 'd') and color in ('r', 'b', 'p') and 10 >= frame_rate >= 0.1 and 70 > pattern.length > 1 and pattern.split('') in ('r', 'b', 'p', '0'):
+            a = ' '.join(['EXT mled', str(direction), str(color), str(frame_rate), str(pattern)])
+            return self.run(a, ' '.join(['Setting RMTT string display direction to:', str(direction), 'with color:', str(color), 'and frame rate:', str(frame_rate), 'and pattern:', str(pattern), '\r\n']))
+        print('\r\nERROR: Parameter pattern needs to contain only r, b, p and 0, and must be between 1 and 70 characters, color must contain r, b, or p, direction can contain only u, d, l, r, and frame rate can be a int or float between 0.1 and 10!')
+        print('ERROR LOCATION: tello.set_display_image_direction()\r\n')
+        return 'mled error'
+    def set_display_ascii_character(self, character: str, color: str):
+        if character == 'heart' or character == string.printable and color in ('r', 'b', 'p'):
+            a = ' '.join(['EXT mled s', str(character), str(color)])
+            return self.run(a, ' '.join(['Displaying ASCII character:', str(character), 'with color:', str(color), '\r\n']))
+        print('\r\nERROR: Parameter character needs to be a printable character or "heart", and color must contain r, b, or p!')
+        print('ERROR LOCATION: tello.set_display_ascii_character()\r\n')
+        return 'mled error'
+    def set_display_boot(self, pattern: str):
+        if pattern.split('') in ('r', 'b', 'p', '0') and 64 > pattern.length > 1:
+            a = ' '.join(['EXT mled sg', str(pattern)])
+            return self.run(a, ' '.join(['Setting RMTT boot display pattern to:', str(pattern), '\r\n']))
+        print('\r\nERROR: Parameter pattern needs to contain only r, b, p and 0, and must be between 1 and 64 characters!')
+        print('ERROR LOCATION: tello.set_display_boot()\r\n')
+        return 'mled error'
+    def clear_display_boot(self):
+        a = 'EXT mled sc'
+        return self.run(a, ' '.join(['Clearing RMTT boot display pattern\r\n']))
+    def set_display_brightness(self, brightness: int):
+        if 255 >= brightness >= 0:
+            a = ' '.join(['EXT mled sl', str(brightness)])
+            return self.run(a, ' '.join(['Setting RMTT display brightness to:', str(brightness), '\r\n']))
+        print('\r\nERROR: Parameter brightness needs to be between 0 and 255!')
+        print('ERROR LOCATION: tello.set_display_brightness()\r\n')
+        return 'mled error'
+    def get_height(self):
+        a = 'EXT tof?'
+        return self.run(a, ' '.join(['Getting height...\r\n']))
+    def get_rmtt_version(self):
+        a = 'EXT version?'
+        return self.run(a, ' '.join(['Getting RMTT version...\r\n']))
+    
+    # End command
     def end(self):
         self.sock.close()
         print('Exiting...')
