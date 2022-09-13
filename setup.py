@@ -4,13 +4,13 @@ import email
 setup(
     name='tello-sdk',
     packages=['tello-sdk'],
-    version='2.0.3',
+    version='2.0.4-alpha',
     license='MIT',
     description='Python SDK fro the Tello EDU and RMTT drones, with all commands and more',
     author='ErnGusMik',
     author_email='ernests.mikuts@gmail.com',
     url='https://github.com/ErnGusMik/python-tello',
-    download_url='https://github.com/ErnGusMik/python-tello/archive/refs/tags/v2.0.3-alpha.tar.gz',
+    download_url='https://github.com/ErnGusMik/python-tello/archive/refs/tags/v2.0.4-alpha.tar.gz',
     keywords=['tello', 'drone', 'sdk', 'python', 'python3', 'rmtt', 'edu', 'telloedu', 'tello-rmtt', 'tello-edu', 'sdk'],
     install_requires=[
         'sentry-sdk'
