@@ -27,7 +27,6 @@ sentry_sdk.init(
 class Tello():
     """Class for info commands to the Tello or RMTT drones"""
 
-
     def __init__(self, log_in_console: bool = True, tips: bool = True):
         """Checks network name, creates UDP socket and prints starting info to user"""
         # Configure logging
@@ -76,7 +75,7 @@ class Tello():
         logging.info('             Drone Script             ')
         logging.info('--------------------------------------')
 
-        logging.debug(f'Current port for UDP connection: {str(port)}')
+        logging.debug('Current port for UDP connection: %s', str(port))
 
         logging.info('          Checking network...         \r\n')
         time.sleep(0.5)
@@ -110,7 +109,7 @@ class Tello():
                     val = val.strip()
                     wifi_val = val
             if 'TELLO-' not in wifi_val or 'RMTT-' not in wifi_val:
-                logging.debug(f'Network detected: {wifi_val}')
+                logging.debug('Network detected: %s', wifi_val)
                 logging.warning('It seems like you have joined a different network. Please make sure that you have joined the TELLO-XXXXX Wi-Fi.')
             else:
                 logging.debug('Required network detected:', wifi_val)
@@ -127,7 +126,7 @@ class Tello():
         self.tello_address = ('192.168.10.1', 8889)
         self.sock.bind(locaddr)
         logging.debug('Socket created.')
-        logging.debug(f'Socket bound to: {str(locaddr)}')
+        logging.debug('Socket bound to: %s', str(locaddr))
 
         self.recvThread = threading.Thread(target=self.receive)
         self.recvThread.start()
@@ -165,7 +164,7 @@ class Tello():
         if self.abort is False:
             response = self.response.decode(encoding='utf-8')
             self.response = None
-            logging.debug(f'Response to previous command: {response}')
+            logging.debug('Response to previous command: %s', response)
             return response
         return 'error'
 
@@ -234,7 +233,7 @@ class Tello():
         )
 
     def set_wifi_channel(self, channel: int):
-        '''Sends command to set the WiFi channel'''
+        """Sends command to set the WiFi channel"""
         logging.debug('Sending command: set_wifi_channel()')
         return self.run(
             f'wifi {channel}',
@@ -250,7 +249,7 @@ class Tello():
                 'Setting new ports for status and video\r\n'
             )
             if ports == 'ok':
-                logging.info(f'New ports set by client: {info_port} and {video_port}')
+                logging.info('New ports set by client: %s and %s', info_port, video_port)
                 self.info_port = info_port
                 self.tello_address = ('192.168.10.1', info_port)
                 #
@@ -358,7 +357,7 @@ class Tello():
             'Emergency stop. Attempting to stop motors.\r\n'
         )
         logging.critical('Emergency stop. Exiting script.')
-        logging.debug(f'Emergency stop due to: {reason}. Unable to continue due to motor stop. Exiting.')
+        logging.debug('Emergency stop due to: %s. Unable to continue due to motor stop. Exiting.', reason)
         sys.exit()
 
     def stop_movement(self):
@@ -482,7 +481,7 @@ class Tello():
     def set_wifi(self, ssid: str, passw: str):
         """Sends command to set wifi ssid and passw"""
         logging.debug('Sending command: set_wifi()')
-        logging.debug(f'SSID: {ssid}, PASSW: {passw}')
+        logging.info('SSID: %s, PASSWORD: %s', ssid, passw)
         logging.debug('Please note that you will not be able to connect to the drone if you forget this password!')
         return self.run(
             f'wifi {ssid}, {passw}',
@@ -788,7 +787,7 @@ class Tello():
         return 'mled error'
 
     def get_height(self):
-        '''Sends command to get the distance of the drone from the floor'''
+        """Sends command to get the distance of the drone from the floor"""
         logging.debug('Sending command: get_height()')
         return self.run(
             'EXT tof?',
@@ -796,7 +795,7 @@ class Tello():
         )
 
     def get_rmtt_version(self):
-        '''Sends command to get the RMTT version'''
+        """Sends command to get the RMTT version"""
         logging.debug('Sending command: get_rmtt_version()')
         return self.run(
             'EXT version?',

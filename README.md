@@ -1,7 +1,7 @@
 # Python Tello
 This is a library for easy usage of the Ryze Tello drone education edition. <br />
 **Current Version:**
-*2.0.2 Alpha* <br />
+*2.0.3 Alpha* <br />
 SDK 3.0 is **here**! Documentation and testing in progress!
 ## Requirements:
 * Python installed on your system or as a VS Code extension
@@ -216,29 +216,37 @@ tello.end()
 ```
 
 ## Version history:
-**2.0.2 Alpha**
+**2.0.3-alpha**
+* Reorganized structure for PyPi
+* Added LICENSE.txt (MIT License)
+* Added setup.cfg
+* Added setup.py and configured for PyPi
+* Added tello-sdk/__init__.py
+* We're pip installable now!
+
+**2.0.2-alpha**
 * Style fixes
 * Started work on going pip-ready :)
 * Changed all print to logging (for easier debugging)
 * Added debugging and tips options to Tello class
 
-**2.0.1 Alpha**
+**2.0.1-alpha**
 * Small fixes
 
-**2.0 Alpha**
+**2.0-alpha**
 * All new Tello SDK 3.0 commands implemented!
 * Small potential bug/style fixes
 * This is an Alpha version, so it is **not** stable, by any means!
 
 
-**1.1.2 Alpha**
+**1.1.2-alpha**
 * Potential bug fixes
 * Security issue fix
 * Performance optimizations
 * Remodel of __init__ function
 
 
-**1.1 Beta:**
+**1.1-beta:**
 * Implementation of some Tello SDK 3.0 commands
 * Naming changes
 * Functions now return the response
@@ -246,7 +254,7 @@ tello.end()
 * V1.1.1: spelling fix
 
 
-**1.0 Beta:**
+**1.0-beta:**
 * Implement most of Tello SDK 2.0 commands
 * Documentation started
 * `tello.run()` command for executing any command straight to the drone.
