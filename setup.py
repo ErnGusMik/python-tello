@@ -15,6 +15,7 @@ setup(
     install_requires=[
         'sentry-sdk'
     ],
+    long_description='README.md',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
