@@ -10,7 +10,7 @@ setup(
     author='ErnGusMik',
     author_email='ernests.mikuts@gmail.com',
     url='https://github.com/ErnGusMik/python-tello',
-    download_url='', # LINK TO THE TAR.GZ FILE
+    download_url='https://github.com/ErnGusMik/python-tello/archive/refs/tags/v2.0.3-alpha.tar.gz',
     keywords=['tello', 'drone', 'sdk', 'python', 'python3', 'rmtt', 'edu', 'telloedu', 'tello-rmtt', 'tello-edu', 'sdk'],
     install_requires=[
         'sentry-sdk'
