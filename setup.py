@@ -1,9 +1,9 @@
-from distutils.core import setup
-import email
+from setuptools import setup, find_packages
+from pathlib import Path
 
 setup(
     name='tello-sdk',
-    packages=['tello-sdk'],
+    packages=find_packages('tello-sdk'),
     version='2.0.4-alpha',
     license='MIT',
     description='Python SDK fro the Tello EDU and RMTT drones, with all commands and more',
@@ -16,6 +16,7 @@ setup(
         'sentry-sdk'
     ],
     long_description='README.md',
+    long_description_content_type='text/markdown',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',

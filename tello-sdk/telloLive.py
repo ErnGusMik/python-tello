@@ -106,7 +106,7 @@ while True:
         msg = input("")
 
         if not msg:
-            break  
+            break
 
         # Ending functionality (when typed 'end')
         if msg == 'end':

@@ -11,7 +11,6 @@ import sentry_sdk
 import logging
 
 # Initialize Sentry (error catching)
-# We will be able to see the name of your computer, the error, and the line of code that caused it.
 # Delete the following 4 lines to opt out
 # More: sentry.io
 
@@ -58,6 +57,8 @@ class Tello():
         self.response = None
         self.sent = None
         self.ip = None
+        self.info_port = 8889
+        self.video_port = 11111
 
         # Set variables for connection to drone
         host = ''
@@ -105,14 +106,14 @@ class Tello():
             wifi_val = 'Not connected'
             for line in out.decode('utf-8').split('\n'):
                 if "SSID: " in line:
-                    key, val = line.split(': ')
+                    _, val = line.split(': ')
                     val = val.strip()
                     wifi_val = val
             if 'TELLO-' not in wifi_val or 'RMTT-' not in wifi_val:
                 logging.debug('Network detected: %s', wifi_val)
                 logging.warning('It seems like you have joined a different network. Please make sure that you have joined the TELLO-XXXXX Wi-Fi.')
             else:
-                logging.debug('Required network detected:', wifi_val)
+                logging.debug('Required network detected: %s', wifi_val)
         else:
             logging.warning('Could not determine network.')
             logging.warning('Make sure that you are connected to the TELLO-XXXXX or RMTT-XXXXX WiFi networks.')
@@ -171,7 +172,6 @@ class Tello():
     def _set_abort(self):
         """Sets the abort variable to True"""
         self.abort = True
-        return None
 
     # SDK 3.0 Commands
     def throw_fly(self):
@@ -371,7 +371,7 @@ class Tello():
     def up(self, x: int):
         """Sends command to move up x cm"""
         logging.debug('Sending command: up()')
-        if x >= 20 and x <= 500:
+        if 20 <= x <= 500:
             return self.run(
                 f'up {str(x)}',
                 f'Ascending to {str(x)} cm from the ground \r\n'
@@ -382,7 +382,7 @@ class Tello():
     def down(self, x: int):
         """Sends command to move down x cm"""
         logging.debug('Sending command: down()')
-        if x >= 20 and x <= 500:
+        if 20 <= x <= 500:
             return self.run(
                 f'down {str(x)}',
                 f'Descending to {str(x)} cm from the ground \r\n'
@@ -390,10 +390,10 @@ class Tello():
         logging.warning('tello.down(): Invalid value.')
         return 'error'
 
-    def left(self, x: int): 
+    def left(self, x: int):
         """Sends command to move left x cm"""
         logging.debug('Sending command: left()')
-        if x >= 20 and x <= 500:
+        if 20 <= x <= 500:
             return self.run(
                 f'left {str(x)}',
                 f'Moving left {str(x)} cm, keep clear of drone\'s path \r\n'
@@ -404,7 +404,7 @@ class Tello():
     def right(self, x: int):
         """Sends command to move right x cm"""
         logging.debug('Sending command: right()')
-        if x >= 20 and x <= 500:
+        if 20 <= x <= 500:
             return self.run(
                 f'right {str(x)}',
                 f'Moving right {str(x)} cm, keep clear of drone\'s path \r\n'
@@ -415,7 +415,7 @@ class Tello():
     def forward(self, x: int):
         """Sends command to move forward x cm"""
         logging.debug('Sending command: forward()')
-        if x >= 20 and x <= 500:
+        if 20 <= x <= 500:
             return self.run(
                 f'forward {str(x)}',
                 f'Moving forward {str(x)} cm, keep clear of drone\'s path \r\n'
@@ -426,7 +426,7 @@ class Tello():
     def back(self, x: int):
         """Sends command to move back x cm"""
         logging.debug('Sending command: back()')
-        if x >= 20 and x <= 500:
+        if 20 <= x <= 500:
             return self.run(
                 f'back {str(x)}',
                 f'Moving forward {str(x)} cm, keep clear of drone\'s path \r\n'
@@ -437,7 +437,7 @@ class Tello():
     def cw(self, x: int):
         """Sends command to rotate clockwise x degrees"""
         logging.debug('Sending command: cw()')
-        if x >= 1 and x <= 360:
+        if 1 <= x <= 360:
             return self.run(
                 f'cw {str(x)}',
                 f'Rotating clockwise for {str(x)} degrees \r\n'
@@ -448,7 +448,7 @@ class Tello():
     def ccw(self, x: int):
         """Sends command to rotate counter-clockwise x degrees"""
         logging.debug('Sending command: ccw()')
-        if x >= 1 and x <= 360:
+        if 1 <= x <= 360:
             return self.run(
                 f'ccw {str(x)}',
                 f'Rotating counter-clockwise for {str(x)} degrees \r\n'
@@ -610,7 +610,7 @@ class Tello():
             return 'error'
         logging.warning('tello.go(): Invalid coordinates.')
         return 'error'
-    
+
     def curve(self, x1: int, x2: int, y1: int, y2: int, z1: int, z2: int, s: int):
         """Sends command to curve from x1 y1 z1 at speed s to x2 y2 z2"""
         logging.debug('Sending command: curve()')
@@ -626,7 +626,7 @@ class Tello():
         return 'error'
 
     def go_mission_pad(self, x: int, y: int, z: int, s: int, mid: str):
-        """Sends command to move to mission pad x y z at speed s and find mission pad mid"""
+        """Sends command to move to mission pad x y z at speed s and find Mpad mid"""
         logging.debug('Sending command: go_mission_pad()')
         mid_ok = False
         for id in self.mids.split(' '):
@@ -648,7 +648,7 @@ class Tello():
         return 'error'
 
     def curve_mission_pad(self, x1: int, x2: int, y1: int, y2: int, z1: int, z2: int, s: int, mid: str):
-        """Sends command to curve from x y z 1 at speed s to x y z 2 and find mission pad mid"""
+        """Sends command to curve from x y z 1 at speed s to x y z 2 and find Mpad mid"""
         logging.debug('Sending command: curve_mission_pad()')
         mid_ok = False
         for id in self.split(' '):
@@ -669,9 +669,15 @@ class Tello():
         logging.warning('tello.curve_mission_pad(): Invalid coordinates.')
         return 'error'
 
-    #
     # SDK 3.0 DISPLAY Commands
-    #
+    def set_light_off(self):  # TO TEST
+        """Sends command to turn off the lights"""
+        logging.debug('Sending command: set_light_off()')
+        return self.run(
+            'EXT led 0 0 0',
+            'Turning off the big light\r\n'
+        )
+    
     def set_light_color(self, r: int, g: int, b: int):
         """Sends command to set the color of the LED"""
         logging.debug('Sending command: set_light_color()')
@@ -688,8 +694,8 @@ class Tello():
         logging.debug('Sending command: set_light_pulse()')
         if 255 >= r >= 0 and 255 >= g >= 0 and 255 >= b >= 0 and 2.5 >= p >= 0.1:
             return self.run(
-                f'EXT led {str(p)} {str(r)} {str(g)} {str(b)}',
-                f'Setting RMTT light color to (r, g, b):, {str(r)}, {str(g)}, {str(b)}, with pulse of, {str(p)}, Hz\r\n'
+                f'EXT led br {str(p)} {str(r)} {str(g)} {str(b)}',
+                f'Setting RMTT light color to (r, g, b):, {str(r)}, {str(g)}, {str(b)}, with pulse of, {str(p)} Hz\r\n'
             )
         logging.warning('tello.set_light_pulse(): Invalid values.')
         return 'led error'
@@ -699,73 +705,87 @@ class Tello():
         logging.debug('Sending command: set_light_flash()')
         if 255 >= r1 >= 0 and 255 >= g1 >= 0 and 255 >= b1 >= 0 and 255 >= r2 >= 0 and 255 >= g2 >= 0 and 255 >= b2 >= 0 and 2.5 >= f >= 0.1:
             return self.run(
-                f'EXT led {str(f)} {str(r1)} {str(g1)} {str(b1)} {str(r2)} {str(g2)} {str(b2)}',
+                f'EXT led bl {str(f)} {str(r1)} {str(g1)} {str(b1)} {str(r2)} {str(g2)} {str(b2)}',
                 f'Setting RMTT light color to (r, g, b): {str(r1)}, {str(g1)}, {str(b1)} and {str(r2)}, {str(g2)}, {str(b2)} with flash of {str(f)} Hz\r\n'
             )
         logging.warning('tello.set_light_flash(): Invalid values.')
         return 'led error'
 
-    def set_display_pattern(self, pattern: str):
+    def set_display_pattern(self, pattern: str = '0'):
         """Sends command to set the display pattern"""
         logging.debug('Sending command: set_display_pattern()')
-        if pattern.split('') in ('r', 'b', 'p', '0') and 64 > pattern.length > 1:
-            a = f'EXT mled g {str(pattern)}'
+        for char in pattern:
+            if char not in 'rbp0':
+                logging.warning('tello.set_display_pattern(): Invalid pattern.')
+                return 'matrix error'
+        return self.run(
+            f'EXT mled g {str(pattern)}',
+            f'Setting RMTT display pattern to: {str(pattern)} \r\n'
+        )
+    
+    def set_display_blank(self):  # TO TEST
+        """Sends command to make the display blank"""
+        logging.debug('Sending command: set_display_off()')
+        return self.run(
+            'EXT mled g 0000000000000000000000000000000000000000000000000000000000000000',
+            'Turning off the display\r\n'
+        )
+    def set_display_string(self, direction: str, color: str, frame_rate: float or int, string: str):
+        """Sends command to show a string on the display"""
+        logging.debug('Sending command: set_display_string()')
+        for char in direction:
+            if char not in 'lrud':
+                logging.warning('tello.set_display_string(): Invalid direction.')
+                return 'matrix error'
+        if color in ('r', 'b', 'p') and 10 >= frame_rate >= 0.1:
             return self.run(
-                f'EXT mled g {str(pattern)}',
-                f'Setting RMTT display pattern to: {str(pattern)} \r\n'
+                f'EXT mled {str(direction)} {str(color)} {str(frame_rate)} {str(string)}',
+                f'Showing the string: {str(string)} with color: {str(color)}, frame rate (Hz): {str(frame_rate)} and in the diretion: {str(direction)} on the RMTT display \r\n'
             )
-        logging.warning('tello.set_display_pattern(): Invalid pattern.')
-        return 'mled error'
+        logging.warning('tello.set_display_string(): Invalid values.')
+        return 'matrix error'
 
-    #
-    # AWAITING TESTING
-    #
-    def set_display_string_direction(self, direction: str, color: str, frame_rate: float or int, pattern: str):
-        """Sends command to set the display string direction""" # TO BE CHANGED
-        logging.debug('Sending command: set_display_string_direction()') # TO BE CHANGED
-        if direction.split('') in ('l', 'r', 'u', 'd') and color in ('r', 'b', 'p') and 10 >= frame_rate >= 0.1 and 70 > pattern.length > 1 and pattern.split('') in ('r', 'b', 'p', '0'):
+    def set_display_moving_image(self, direction: str, color: str, frame_rate: float or int, pattern: str):
+        """Sends command to show a moving image on the display"""
+        logging.debug('Sending command: set_display_moving_image()')
+        for char in direction:
+            if char not in 'lrud':
+                logging.warning('tello.set_display_moving_image(): Invalid direction.')
+                return 'matrix error'
+        for char in pattern:
+            if char not in 'rbp0':
+                logging.warning('tello.set_display_moving_image(): Invalid pattern.')
+                return 'matrix error'
+        if color in ('r', 'b', 'p') and 10 >= frame_rate >= 0.1:
             return self.run(
-                f'EXT mled {str(direction)} {str(color)} {str(frame_rate)} {str(pattern)}',
-                f'Setting RMTT string display direction to: {str(direction)} with color: {str(color)}, frame rate: {str(frame_rate)} and pattern: {str(pattern)} \r\n'
+                f'EXT mled {str(direction)} g {str(frame_rate)} {str(pattern)}',
+                f'Showing a moving image on the RMTT display in the direction: {str(direction)} with color: {str(color)}, frame rate (Hz): {str(frame_rate)} and pattern: {str(pattern)} \r\n'
             )
-        logging.warning('tello.set_display_string_direction(): Invalid values.') # TO BE CHANGED
-        return 'mled error'
+        logging.warning('tello.set_display_moving_image(): Invalid values.')
+        return 'matrix error'
 
-    #
-    # AWAITING TESTING
-    #
-    def set_display_image_direction(self, direction: str, color: str, frame_rate: float or int, pattern: str):
-        """Sends command to set the display image direction""" # TO BE CHANGED
-        logging.debug('Sending command: set_display_image_direction()') # TO BE CHANGED
-        if direction.split('') in ('l', 'r', 'u', 'd') and color in ('r', 'b', 'p') and 10 >= frame_rate >= 0.1 and 70 > pattern.length > 1 and pattern.split('') in ('r', 'b', 'p', '0'):
-            return self.run(
-                f'EXT mled {str(direction)} {str(color)} {str(frame_rate)} {str(pattern)}',
-                f'Setting RMTT string display direction to: {str(direction)} with color: {str(color)}, frame rate: {str(frame_rate)} and pattern: {str(pattern)} \r\n'
-            )
-        logging.warning('tello.set_display_image_direction(): Invalid values.') # TO BE CHANGED
-        return 'mled error'
-
-    def set_display_ascii_character(self, character: str, color: str):
+    def set_display_ascii_character(self, character: str, color: str): # TEST
         """Sends command to display ascii character"""
         logging.debug('Sending command: set_display_ascii_character()')
-        if character == 'heart' or character == string.printable and color in ('r', 'b', 'p'):
+        if character == 'heart' or character.encode('ascii') and color in ('r', 'b', 'p'):
             return self.run(
-                f'EXT mled s {str(character)}, {str(color)}', 
+                f'EXT mled s {str(color)} {str(character.encode("ascii"))}',	# TEST
                 f'Displaying ASCII character: {str(character)} with color: {str(color)} \r\n'
             )
         logging.warning('tello.set_display_ascii_character(): Invalid values.')
-        return 'mled error'
+        return 'matrix error'
 
     def set_display_boot(self, pattern: str):
         """Sends command to set the display boot pattern"""
         logging.debug('Sending command: set_display_boot()')
-        if pattern.split('') in ('r', 'b', 'p', '0') and 64 > pattern.length > 1:
-            return self.run(
-                f'EXT mled sg {str(pattern)}',
-                f'Setting RMTT boot display pattern to: {str(pattern)} \r\n'
-            )
-        logging.warning('tello.set_display_boot(): Invalid pattern.')
-        return 'mled error'
+        for char in pattern:
+            if char not in 'rbp0':
+                logging.warning('tello.set_display_boot(): Invalid pattern.')
+                return 'error'
+        return self.run(
+            f'EXT mled sg {str(pattern)}',
+            f'Setting RMTT boot display pattern to: {str(pattern)} \r\n'
+        )
 
     def clear_display_boot(self):
         """Sends command to clear the display boot pattern"""
@@ -784,7 +804,7 @@ class Tello():
                 f'Setting RMTT display brightness to: {str(brightness)} \r\n'
             )
         logging.warning('tello.set_display_brightness(): Invalid brightness.')
-        return 'mled error'
+        return 'matrix error'
 
     def get_height(self):
         """Sends command to get the distance of the drone from the floor"""
