@@ -1,7 +1,7 @@
 # Python Tello
 This is a library for easy usage of the Ryze Tello drone education edition. <br />
 **Current Version:**
-*2.1.0 Alpha* <br />
+*2.2.0 Alpha* <br />
 SDK 3.0 is **here** and **tested**! Documentation in progress!
 ## Requirements:
 * Python installed on your system or as a VS Code extension
@@ -9,20 +9,12 @@ SDK 3.0 is **here** and **tested**! Documentation in progress!
 * This package
 
 ## Quickstart
-This quickstart focuses on the file edition.
-To get instructions for the live edition, go to [Tello Live Edition Guide]()
-```python
-import telloFile # Imports library
-tello = telloFile.Tello() # Sets var tello as the class
-tello.connect() # Initializes SDK mode (more below)
-```
-*(WRITEHERE.py)*
 
-## Usage
-The library consists of callable functions.
-To see `set` functions, please go [here](SET%26READ_GUIDE.md)
-To see `complex` functions, please go [here](COMPLEX_GUIDE.md)
-To see examples, please go [here]()
+Please see the [Wiki](https://github.com/ErnGusMik/python-tello/wiki)
+
+
+---
+---
 
 ### tello.connect()
 Initializes SDK mode.
