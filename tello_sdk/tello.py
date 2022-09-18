@@ -76,7 +76,7 @@ class Tello():
         logging.info('             Drone Script             ')
         logging.info('--------------------------------------')
 
-        logging.debug('Current port for UDP connection: %s', str(port))
+        logging.debug(f'Current port for UDP connection: {str(port)}')
 
         logging.info('          Checking network...         \r\n')
         time.sleep(0.5)
@@ -152,7 +152,7 @@ class Tello():
         # Send the encoded message to the Tello
         self.sent = self.sock.sendto(command, self.tello_address)
         if self.tips:
-            logging.info(message)
+            print('--:--:-- [TIP] ' + message)
         self.response = None
         timer.start()
         while self.response is None:
@@ -182,7 +182,7 @@ class Tello():
             'Gently toss the drone into the air within 5 seconds!\r\n'
         )
 
-    def motor_on(self):
+    def motors_on(self):
         """Sends command to turn on motors"""
         logging.debug('Sending command: motor_on()')
         return self.run(
@@ -190,7 +190,7 @@ class Tello():
             'Turning on motors\r\n'
         )
 
-    def motor_off(self):
+    def motors_off(self):
         """Sends command to turn off motors"""
         logging.debug('Sending command: motor_off()')
         return self.run(
@@ -309,9 +309,9 @@ class Tello():
         )
 
     # SDK 2.0 Commands
-    def connect(self):
+    def init(self):
         """Sends command to initialize SDK mode"""
-        logging.debug('Sending command: connect()')
+        logging.debug('Sending command: init()')
         return self.run(
             'command',
             'Enabling SDK mode\r\n'
@@ -360,9 +360,9 @@ class Tello():
         logging.debug('Emergency stop due to: %s. Unable to continue due to motor stop. Exiting.', reason)
         sys.exit()
 
-    def stop_movement(self):
-        """Sends command to stop all movement"""
-        logging.debug('Sending command: stop_movement()')
+    def hover(self):
+        """Sends command to stop all movement, hover"""
+        logging.debug('Sending command: hover()')
         return self.run(
             'stop',
             'Stopping all movement, hovering.\r\n'
@@ -434,35 +434,33 @@ class Tello():
         logging.warning('tello.back(): Invalid value.')
         return 'error'
 
-    def cw(self, x: int):
-        """Sends command to rotate clockwise x degrees"""
+    def rotate(self, direction: str,  degrees: int):
+        """Sends command to rotate clockwise or anti-clockwise for specified amount of degrees"""
         logging.debug('Sending command: cw()')
-        if 1 <= x <= 360:
-            return self.run(
-                f'cw {str(x)}',
-                f'Rotating clockwise for {str(x)} degrees \r\n'
-            )
-        logging.warning('tello.cw(): Invalid value.')
+        if 1 <= degrees <= 360:
+            if direction is 'cw':
+                return self.run(
+                    f'cw {str(degrees)}',
+                    f'Rotating clockwise {str(degrees)} degrees \r\n'
+                )
+            if direction is 'ccw':
+                return self.run(
+                    f'ccw {str(degrees)}',
+                    f'Rotating counter-clockwise {str(degrees)} degrees \r\n'
+                )
+            logging.warning('tello.rotate(): Invalid direction.')
+            return 'error'
+        logging.warning('tello.rotate(): Invalid value.')
         return 'error'
 
-    def ccw(self, x: int):
-        """Sends command to rotate counter-clockwise x degrees"""
-        logging.debug('Sending command: ccw()')
-        if 1 <= x <= 360:
-            return self.run(
-                f'ccw {str(x)}',
-                f'Rotating counter-clockwise for {str(x)} degrees \r\n'
-            )
-        logging.warning('tello.ccw(): Invalid value.')
-        return 'error'
 
-    def flip(self, x: str):
-        """Sends command to flip in direction x"""
+    def flip(self, direction: str):
+        """Sends command to flip in direction specified"""
         logging.debug('Sending command: flip()')
-        if x in ('l', 'r', 'f', 'b'):
+        if direction in ('l', 'r', 'f', 'b'):
             return self.run(
-                f'flip {x}',
-                f'Flipping {x}, be careful \r\n'
+                f'flip {direction}',
+                f'Flipping {direction}, be careful \r\n'
             )
         logging.warning('tello.flip(): Invalid value.')
         return 'error'
