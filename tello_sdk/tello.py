@@ -57,7 +57,7 @@ class Tello():
         self.response = None
         self.sent = None
         self.ip = None
-        self.info_port = 8889
+        self.status_port = 8889
         self.video_port = 11111
 
         # Set variables for connection to drone
@@ -212,19 +212,19 @@ class Tello():
         return 'ok'
 
     # SDK 3.0 SET Commands
-    def rc(self, roll: int = 0, pitch: int = 0, yaw: int = 0, throttle: int = 0):
+    def rc(self, roll: int = 0, pitch: int = 0, throttle: int = 0, yaw: int = 0):
         """Sends command to adjust lever force values (acc. to official docs)"""
         logging.debug('Sending command: rc()')
         if 100 >= roll >= -100 and 100 >= pitch >= -100 and 100 >= yaw >= -100 and 100 >= throttle >= -100:
             self.run(
-                f'rc {roll} {pitch} {yaw} {throttle}',
+                f'rc {roll} {pitch} {throttle} {yaw}',
                 'Setting lever force values\r\n'
             )
             return 'ok'
         logging.warning('tello.rc(): Invalid value.')
         return 'error'
 
-    def ap(self, ssid: str, password: str):
+    def set_ap(self, ssid: str, password: str):
         """Sends command to join access point, then reboot"""
         logging.debug('Sending command: ap()')
         return self.run(
@@ -236,30 +236,30 @@ class Tello():
         """Sends command to set the WiFi channel"""
         logging.debug('Sending command: set_wifi_channel()')
         return self.run(
-            f'wifi {channel}',
+            f'wifisetchannel {channel}',
             f'Setting Wi-Fi channel to {channel} channel\r\n'
         )
 
-    def set_port(self, info_port: int, video_port: int):
+    def set_ports(self, status_port: int, video_port: int):
         """Sends command to set the ports for status and video"""
-        logging.debug('Sending command: set_port()')
-        if 1025 <= info_port <= 65535 and 1025 <= video_port <= 65535:
+        logging.debug('Sending command: set_ports()')
+        if 1025 <= status_port <= 65535 and 1025 <= video_port <= 65535:
             ports = self.run(
-                f'port {info_port} {video_port}',
+                f'port {status_port} {video_port}',
                 'Setting new ports for status and video\r\n'
             )
             if ports == 'ok':
-                logging.info('New ports set by client: %s and %s', info_port, video_port)
-                self.info_port = info_port
-                self.tello_address = ('192.168.10.1', info_port)
+                logging.info('New ports set by client: %s and %s', status_port, video_port)
+                # self.info_port = status_port
+                # self.tello_address = ('192.168.10.1', info_port)
                 #
                 # SET VIDEO PORT
                 #
                 return 'ok'
-            logging.warning('tello.set_port(): Failed to set ports.')
+            logging.warning('tello.set_ports(): Failed to set ports.')
             logging.debug('Failed to set ports due to an error response from the drone.')
             return 'error'
-        logging.warning('tello.set_port(): Invalid value.')
+        logging.warning('tello.set_ports(): Invalid value.')
         return 'error'
 
     def set_fps(self, fps: str):
@@ -465,6 +465,7 @@ class Tello():
         logging.warning('tello.flip(): Invalid value.')
         return 'error'
 
+    # SET Commands
     def set_speed(self, x: int):
         """Sends command to set speed to x cm/s"""
         logging.debug('Sending command: set_speed()')
@@ -529,7 +530,7 @@ class Tello():
             'Obtaining battery level \r\n'
         )
 
-    def get_time(self):
+    def get_flight_time(self):
         """Sends command to get flight time"""
         logging.debug('Sending command: get_time()')
         return self.run(
@@ -537,9 +538,9 @@ class Tello():
             'Obtaining current flight time \r\n'
         )
 
-    def get_wifi(self):
-        """Sends command to get wifi info"""
-        logging.debug('Sending command: get_wifi()')
+    def get_wifi_snr(self):
+        """Sends command to get wifi SNR"""
+        logging.debug('Sending command: get_wifi_snr()')
         return self.run(
             'wifi?',
             'Obtaining WiFi SNR \r\n'
@@ -551,6 +552,13 @@ class Tello():
         return self.run(
             'sdk?',
             'Obtaining Tello SDK Version \r\n'
+        )
+    def get_version(self):
+        """Sends command to get Tello version"""
+        logging.debug('Sending command: get_version()')
+        return self.run(
+            'version?',
+            'Obtaining Tello Version \r\n'
         )
 
     def get_sn(self):
@@ -574,7 +582,7 @@ class Tello():
         """Sends command to get RMTT WiFi version"""
         logging.debug('Sending command: get_rmtt_wifi_version()')
         return self.run(
-            'wifi?',
+            'wifiversion?',
             'Obtaining RMTT WiFi version \r\n'
         )
 
@@ -586,7 +594,7 @@ class Tello():
             'Obtaining RMTT Access Point SSID and password \r\n'
         )
 
-    def get_ssid(self):
+    def get_rmtt_wifi(self):
         """Sends command to get RMTT SSID"""
         logging.debug('Sending command: get_ssid()')
         return self.run(
@@ -804,17 +812,17 @@ class Tello():
         logging.warning('tello.set_display_brightness(): Invalid brightness.')
         return 'matrix error'
 
-    def get_height(self):
-        """Sends command to get the distance of the drone from the floor"""
-        logging.debug('Sending command: get_height()')
+    def get_tof(self):
+        """Sends command to get the distance from the drone to the nearest obstacle in front"""
+        logging.debug('Sending command: get_tof()')
         return self.run(
             'EXT tof?',
-            'Getting height...\r\n'
+            'Getting ToF (read docs for more info)...\r\n'
         )
 
-    def get_rmtt_version(self):
-        """Sends command to get the RMTT version"""
-        logging.debug('Sending command: get_rmtt_version()')
+    def get_esp32_version(self):
+        """Sends command to get the ESP32 version"""
+        logging.debug('Sending command: get_esp32_version()')
         return self.run(
             'EXT version?',
             'Getting RMTT version...\r\n'
