@@ -1,5 +1,4 @@
 # !! tello.curveMpad() -- ERROR: RUN TIMEOUT ???
-
 # Import all needed libraries
 import logging
 import socket

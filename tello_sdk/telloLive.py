@@ -1,6 +1,5 @@
 # Support for this has ended. This will no lonegr be updated.
 # A new real-time Tello control script is coming soon
-
 import socket
 import subprocess
 import sys
