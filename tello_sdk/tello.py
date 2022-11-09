@@ -1,14 +1,15 @@
 # !! tello.curveMpad() -- ERROR: RUN TIMEOUT ???
 
 # Import all needed libraries
-import string
-import socket
-import sys
-import time
-import threading
-import subprocess
-import sentry_sdk
 import logging
+import socket
+import string
+import subprocess
+import sys
+import threading
+import time
+
+import sentry_sdk
 
 # Initialize Sentry (error catching)
 # Delete the following 4 lines to opt out

@@ -1,11 +1,11 @@
 # Support for this has ended. This will no lonegr be updated.
 # A new real-time Tello control script is coming soon
 
-import threading
 import socket
-import sys
-import time
 import subprocess
+import sys
+import threading
+import time
 
 host = ""
 port = 9000
