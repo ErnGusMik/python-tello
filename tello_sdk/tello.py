@@ -83,7 +83,8 @@ class Tello():
 
         # Check what network is connected
         if sys.platform == 'win32':
-            wifi = subprocess.check_output(['/windows/system32/netsh', 'WLAN', 'show', 'interfaces'])
+            wifi = subprocess.check_output(
+                ['/windows/system32/netsh', 'WLAN', 'show', 'interfaces'])
             data = wifi.decode('utf-8')
             wifi_val = 'Not connected'
             for line in data.split('\n'):
@@ -95,12 +96,13 @@ class Tello():
                 logging.debug('Required network detected.')
             else:
                 logging.debug('Network detected')
-                logging.warning('It seems like you have not joined the TELLO- or RMTT-network. Please make sure that you have joined the TELLO- or RMTT- Wi-Fi.')
+                logging.warning(
+                    'It seems like you have not joined the TELLO- or RMTT-network. Please make sure that you have joined the TELLO- or RMTT- Wi-Fi.')
         elif sys.platform == 'darwin':
             process = subprocess.Popen([
                 '/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport',
                 '-I'
-                ], stdout=subprocess.PIPE)
+            ], stdout=subprocess.PIPE)
             out, _ = process.communicate()
             process.wait()
             wifi_val = 'Not connected'
@@ -111,12 +113,14 @@ class Tello():
                     wifi_val = val
             if 'TELLO-' not in wifi_val or 'RMTT-' not in wifi_val:
                 logging.debug('Network detected: %s', wifi_val)
-                logging.warning('It seems like you have joined a different network. Please make sure that you have joined the TELLO-XXXXX Wi-Fi.')
+                logging.warning(
+                    'It seems like you have joined a different network. Please make sure that you have joined the TELLO-XXXXX Wi-Fi.')
             else:
                 logging.debug('Required network detected: %s', wifi_val)
         else:
             logging.warning('Could not determine network.')
-            logging.warning('Make sure that you are connected to the TELLO-XXXXX or RMTT-XXXXX WiFi networks.')
+            logging.warning(
+                'Make sure that you are connected to the TELLO-XXXXX or RMTT-XXXXX WiFi networks.')
 
         # Print info to the user
         logging.info('         Making UDP socket...         \r\n')
@@ -249,7 +253,8 @@ class Tello():
                 'Setting new ports for status and video\r\n'
             )
             if ports == 'ok':
-                logging.info('New ports set by client: %s and %s', status_port, video_port)
+                logging.info('New ports set by client: %s and %s',
+                             status_port, video_port)
                 # self.info_port = status_port
                 # self.tello_address = ('192.168.10.1', info_port)
                 #
@@ -257,7 +262,8 @@ class Tello():
                 #
                 return 'ok'
             logging.warning('tello.set_ports(): Failed to set ports.')
-            logging.debug('Failed to set ports due to an error response from the drone.')
+            logging.debug(
+                'Failed to set ports due to an error response from the drone.')
             return 'error'
         logging.warning('tello.set_ports(): Invalid value.')
         return 'error'
@@ -357,7 +363,8 @@ class Tello():
             'Emergency stop. Attempting to stop motors.\r\n'
         )
         logging.critical('Emergency stop. Exiting script.')
-        logging.debug('Emergency stop due to: %s. Unable to continue due to motor stop. Exiting.', reason)
+        logging.debug(
+            'Emergency stop due to: %s. Unable to continue due to motor stop. Exiting.', reason)
         sys.exit()
 
     def hover(self):
@@ -453,7 +460,6 @@ class Tello():
         logging.warning('tello.rotate(): Invalid value.')
         return 'error'
 
-
     def flip(self, direction: str):
         """Sends command to flip in direction specified"""
         logging.debug('Sending command: flip()')
@@ -481,7 +487,8 @@ class Tello():
         """Sends command to set wifi ssid and passw"""
         logging.debug('Sending command: set_wifi()')
         logging.info('SSID: %s, PASSWORD: %s', ssid, passw)
-        logging.debug('Please note that you will not be able to connect to the drone if you forget this password!')
+        logging.debug(
+            'Please note that you will not be able to connect to the drone if you forget this password!')
         return self.run(
             f'wifi {ssid}, {passw}',
             f'Setting wifi to {ssid}, with password {passw} then rebooting\r\n'
@@ -553,6 +560,7 @@ class Tello():
             'sdk?',
             'Obtaining Tello SDK Version \r\n'
         )
+
     def get_version(self):
         """Sends command to get Tello version"""
         logging.debug('Sending command: get_version()')
@@ -624,7 +632,8 @@ class Tello():
             if 60 >= s >= 10:
                 return self.run(
                     f'curve {str(x1)} {str(y1)} {str(z1)} {str(x2)} {str(y2)} {str(z2)} {str(s)}',
-                    f'Curving from (x, y, z): {str(x1)} {str(y1)} {str(z1)} to {str(x2)} {str(y2)} {str(z2)} at the speed of', str(s), 'cm/s\r\n'
+                    f'Curving from (x, y, z): {str(x1)} {str(y1)} {str(z1)} to {str(x2)} {str(y2)} {str(z2)} at the speed of', str(
+                        s), 'cm/s\r\n'
                 )
             logging.warning('tello.curve(): Invalid speed.')
             return 'error'
@@ -646,7 +655,8 @@ class Tello():
                         f'go {str(x)} {str(y)} {str(z)} {str(s)} {str(mid)}',
                         f'Going to (x, y, z): {str(x)} {str(y)} {str(z)} at the speed of {str(s)} cm/s\r\n'
                     )
-                logging.warning('tello.go_mission_pad(): Invalid mission pad ID.')
+                logging.warning(
+                    'tello.go_mission_pad(): Invalid mission pad ID.')
                 return 'error'
             logging.warning('tello.go_mission_pad(): Invalid speed.')
             return 'error'
@@ -668,7 +678,8 @@ class Tello():
                         f'curve {str(x1)} {str(x2)} {str(z1)} {str(x2)} {str(y2)} {str(z2)} {str(s)} {str(mid)}',
                         f'Curving from (x, y, z): {x1} {y1} {z1} to {x2} {y2} {z2} at the speed of {str(s)} cm/s\r\n'
                     )
-                logging.warning('tello.curve_mission_pad(): Invalid mission pad ID.')
+                logging.warning(
+                    'tello.curve_mission_pad(): Invalid mission pad ID.')
                 return 'error'
             logging.warning('tello.curve_mission_pad(): Invalid speed.')
             return 'error'
@@ -683,7 +694,7 @@ class Tello():
             'EXT led 0 0 0',
             'Turning off the big light\r\n'
         )
-    
+
     def set_light_color(self, r: int, g: int, b: int):
         """Sends command to set the color of the LED"""
         logging.debug('Sending command: set_light_color()')
@@ -722,13 +733,14 @@ class Tello():
         logging.debug('Sending command: set_display_pattern()')
         for char in pattern:
             if char not in 'rbp0':
-                logging.warning('tello.set_display_pattern(): Invalid pattern.')
+                logging.warning(
+                    'tello.set_display_pattern(): Invalid pattern.')
                 return 'matrix error'
         return self.run(
             f'EXT mled g {str(pattern)}',
             f'Setting RMTT display pattern to: {str(pattern)} \r\n'
         )
-    
+
     def set_display_blank(self):  # TO TEST
         """Sends command to make the display blank"""
         logging.debug('Sending command: set_display_off()')
@@ -736,12 +748,14 @@ class Tello():
             'EXT mled g 0000000000000000000000000000000000000000000000000000000000000000',
             'Turning off the display\r\n'
         )
+
     def set_display_string(self, direction: str, color: str, frame_rate: float or int, string: str):
         """Sends command to show a string on the display"""
         logging.debug('Sending command: set_display_string()')
         for char in direction:
             if char not in 'lrud':
-                logging.warning('tello.set_display_string(): Invalid direction.')
+                logging.warning(
+                    'tello.set_display_string(): Invalid direction.')
                 return 'matrix error'
         if color in ('r', 'b', 'p') and 10 >= frame_rate >= 0.1:
             return self.run(
@@ -756,11 +770,13 @@ class Tello():
         logging.debug('Sending command: set_display_moving_image()')
         for char in direction:
             if char not in 'lrud':
-                logging.warning('tello.set_display_moving_image(): Invalid direction.')
+                logging.warning(
+                    'tello.set_display_moving_image(): Invalid direction.')
                 return 'matrix error'
         for char in pattern:
             if char not in 'rbp0':
-                logging.warning('tello.set_display_moving_image(): Invalid pattern.')
+                logging.warning(
+                    'tello.set_display_moving_image(): Invalid pattern.')
                 return 'matrix error'
         if color in ('r', 'b', 'p') and 10 >= frame_rate >= 0.1:
             return self.run(
@@ -770,12 +786,13 @@ class Tello():
         logging.warning('tello.set_display_moving_image(): Invalid values.')
         return 'matrix error'
 
-    def set_display_ascii_character(self, character: str, color: str): # TEST
+    def set_display_ascii_character(self, character: str, color: str):  # TEST
         """Sends command to display ascii character"""
         logging.debug('Sending command: set_display_ascii_character()')
         if character == 'heart' or character.encode('ascii') and color in ('r', 'b', 'p'):
             return self.run(
-                f'EXT mled s {str(color)} {str(character.encode("ascii"))}',	# TEST
+                # TEST
+                f'EXT mled s {str(color)} {str(character.encode("ascii"))}',
                 f'Displaying ASCII character: {str(character)} with color: {str(color)} \r\n'
             )
         logging.warning('tello.set_display_ascii_character(): Invalid values.')

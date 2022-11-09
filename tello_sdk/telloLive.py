@@ -32,7 +32,7 @@ try:
     process = subprocess.Popen([
         '/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport',
         '-I'
-        ], stdout=subprocess.PIPE)
+    ], stdout=subprocess.PIPE)
     out, err = process.communicate()
     process.wait()
     wifi_val = {}
@@ -44,7 +44,8 @@ try:
     if 'TELLO-' not in wifi_val:
         print('Network detected:', wifi_val)
         print('It seems like you have joined a different network. Please make sure that you have joined the TELLO-XXXXX Wi-Fi.')
-        approval = input("Are you sure you want to continue with the script? (y/n)")
+        approval = input(
+            "Are you sure you want to continue with the script? (y/n)")
         if approval == 'y':
             print('\r\n')
         else:
@@ -88,10 +89,13 @@ def recv():
             break
 
 
-print("\r\nTo view all available functions, type", '\033[1m' + 'help' + '\033[0m')
+print("\r\nTo view all available functions, type",
+      '\033[1m' + 'help' + '\033[0m')
 print("\r\nTo quit the script, type", '\033[1m' + 'end' + '\033[0m')
-print("\r\n(For emergencies) To immediately quit the script, press", '\033[1m' + 'Ctrl + C' + '\033[0m')
-print("\r\nIMPORTANT! Do", '\033[1m' + 'not' + '\033[0m', 'type until a response is received!')
+print("\r\n(For emergencies) To immediately quit the script, press",
+      '\033[1m' + 'Ctrl + C' + '\033[0m')
+print("\r\nIMPORTANT! Do", '\033[1m' + 'not' +
+      '\033[0m', 'type until a response is received!')
 print("\r\nTo begin, type", '\033[1m' + 'command' + '\033[0m: \r\n')
 
 
@@ -127,9 +131,11 @@ while True:
             print('     streamoff -- Disable video stream')
             print('     emergency -- Stop motors immediately')
             print('     up/down x -- Ascend/descend to x cm (20-500)')
-            print('     left/right/forward/back x -- Fly forward/backward/left/right for x cm (20-500)')
+            print(
+                '     left/right/forward/back x -- Fly forward/backward/left/right for x cm (20-500)')
             print('     cw/ccw x -- Rotate clockwise/counterclockwise x degrees (1-360)')
-            print('     flip x -- Flip in the x direction (l (left), r (right), f (forw.), b (backw.))')
+            print(
+                '     flip x -- Flip in the x direction (l (left), r (right), f (forw.), b (backw.))')
             print('     stop -- Hover in the air')
             print('\r\nTo view set, read and hard functions, type \'help set\', \'help read\' or \'help hard\' \r\n\r\n')
         elif msg == 'help hard':

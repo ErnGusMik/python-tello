@@ -1,7 +1,10 @@
 from setuptools import setup, find_packages
+
+
 def readme():
     with open('README.md') as f:
         return f.read()
+
 
 setup(
     name='tello-sdk',
@@ -13,8 +16,9 @@ setup(
     author_email='ernests.mikuts@gmail.com',
     url='https://github.com/ErnGusMik/python-tello',
     download_url='https://github.com/ErnGusMik/python-tello/archive/refs/tags/v2.1.0-alpha.tar.gz',
-    keywords=['tello', 'drone', 'sdk', 'python', 'python3', 'rmtt', 'edu', 'telloedu', 'tello-rmtt', 'tello-edu', 'sdk'],
-    install_requires=[ 'sentry-sdk' ],
+    keywords=['tello', 'drone', 'sdk', 'python', 'python3', 'rmtt',
+              'edu', 'telloedu', 'tello-rmtt', 'tello-edu', 'sdk'],
+    install_requires=['sentry-sdk'],
     long_description=readme(),
     long_description_content_type='text/markdown',
     classifiers=[
