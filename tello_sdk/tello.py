@@ -16,9 +16,11 @@ import sentry_sdk
 
 # ------------------ #
 sentry_sdk.init(
-    dsn="https://f2fcaa10be4f41958ab756183583ba81@o1400261.ingest.sentry.io/6728983",
+    dsn=
+    "https://f2fcaa10be4f41958ab756183583ba81@o1400261.ingest.sentry.io/6728983",
     traces_sample_rate=1.0,
 )
+
 # ------------------ #
 
 
@@ -84,8 +86,7 @@ class Tello:
         # Check what network is connected
         if sys.platform == "win32":
             wifi = subprocess.check_output(
-                ["/windows/system32/netsh", "WLAN", "show", "interfaces"]
-            )
+                ["/windows/system32/netsh", "WLAN", "show", "interfaces"])
             data = wifi.decode("utf-8")
             wifi_val = "Not connected"
             for line in data.split("\n"):
@@ -154,7 +155,9 @@ class Tello:
             except Exception:
                 break
 
-    def run(self, command: str, message: str = "No tips available for this command "):
+    def run(self,
+            command: str,
+            message: str = "No tips available for this command "):
         """Sends command to the drone and prints message to the user"""
         self.abort = False
         timer = threading.Timer(10, self._set_abort)
@@ -189,8 +192,8 @@ class Tello:
         """Sends command to the drone to fly when tossed"""
         logging.debug("Sending command: throw_fly()")
         return self.run(
-            "throwfly", "Gently toss the drone into the air within 5 seconds!\r\n"
-        )
+            "throwfly",
+            "Gently toss the drone into the air within 5 seconds!\r\n")
 
     def motors_on(self):
         """Sends command to turn on motors"""
@@ -213,18 +216,17 @@ class Tello:
         return "ok"
 
     # SDK 3.0 SET Commands
-    def rc(self, roll: int = 0, pitch: int = 0, throttle: int = 0, yaw: int = 0):
+    def rc(self,
+           roll: int = 0,
+           pitch: int = 0,
+           throttle: int = 0,
+           yaw: int = 0):
         """Sends command to adjust lever force values (acc. to official docs)"""
         logging.debug("Sending command: rc()")
-        if (
-            100 >= roll >= -100
-            and 100 >= pitch >= -100
-            and 100 >= yaw >= -100
-            and 100 >= throttle >= -100
-        ):
-            self.run(
-                f"rc {roll} {pitch} {throttle} {yaw}", "Setting lever force values\r\n"
-            )
+        if (100 >= roll >= -100 and 100 >= pitch >= -100 and 100 >= yaw >= -100
+                and 100 >= throttle >= -100):
+            self.run(f"rc {roll} {pitch} {throttle} {yaw}",
+                     "Setting lever force values\r\n")
             return "ok"
         logging.warning("tello.rc(): Invalid value.")
         return "error"
@@ -232,9 +234,8 @@ class Tello:
     def set_ap(self, ssid: str, password: str):
         """Sends command to join access point, then reboot"""
         logging.debug("Sending command: ap()")
-        return self.run(
-            f"ap {ssid} {password}", "Connecting to access point, then rebooting\r\n"
-        )
+        return self.run(f"ap {ssid} {password}",
+                        "Connecting to access point, then rebooting\r\n")
 
     def set_wifi_channel(self, channel: int):
         """Sends command to set the WiFi channel"""
@@ -253,9 +254,8 @@ class Tello:
                 "Setting new ports for status and video\r\n",
             )
             if ports == "ok":
-                logging.info(
-                    "New ports set by client: %s and %s", status_port, video_port
-                )
+                logging.info("New ports set by client: %s and %s", status_port,
+                             video_port)
                 # self.info_port = status_port
                 # self.tello_address = ('192.168.10.1', info_port)
                 #
@@ -264,8 +264,7 @@ class Tello:
                 return "ok"
             logging.warning("tello.set_ports(): Failed to set ports.")
             logging.debug(
-                "Failed to set ports due to an error response from the drone."
-            )
+                "Failed to set ports due to an error response from the drone.")
             return "error"
         logging.warning("tello.set_ports(): Invalid value.")
         return "error"
@@ -282,11 +281,11 @@ class Tello:
         """Sends command to set the video stream bitrate"""
         logging.debug("Sending command: set_bitrate()")
         if 1 <= bitrate <= 5:
-            return self.run(
-                f"setbitrate {bitrate}", f"Setting bitrate to {bitrate} Mbps\r\n"
-            )
+            return self.run(f"setbitrate {bitrate}",
+                            f"Setting bitrate to {bitrate} Mbps\r\n")
         if bitrate == 0:
-            return self.run(f"setbitrate {bitrate}", "Setting bitrate to auto\r\n")
+            return self.run(f"setbitrate {bitrate}",
+                            "Setting bitrate to auto\r\n")
         logging.warning("tello.set_bitrate(): Invalid value.")
         return "error"
 
@@ -355,9 +354,8 @@ class Tello:
         """Sends command to move up x cm"""
         logging.debug("Sending command: up()")
         if 20 <= x <= 500:
-            return self.run(
-                f"up {str(x)}", f"Ascending to {str(x)} cm from the ground \r\n"
-            )
+            return self.run(f"up {str(x)}",
+                            f"Ascending to {str(x)} cm from the ground \r\n")
         logging.warning("tello.up(): Invalid value.")
         return "error"
 
@@ -365,9 +363,8 @@ class Tello:
         """Sends command to move down x cm"""
         logging.debug("Sending command: down()")
         if 20 <= x <= 500:
-            return self.run(
-                f"down {str(x)}", f"Descending to {str(x)} cm from the ground \r\n"
-            )
+            return self.run(f"down {str(x)}",
+                            f"Descending to {str(x)} cm from the ground \r\n")
         logging.warning("tello.down(): Invalid value.")
         return "error"
 
@@ -438,9 +435,8 @@ class Tello:
         """Sends command to flip in direction specified"""
         logging.debug("Sending command: flip()")
         if direction in ("l", "r", "f", "b"):
-            return self.run(
-                f"flip {direction}", f"Flipping {direction}, be careful \r\n"
-            )
+            return self.run(f"flip {direction}",
+                            f"Flipping {direction}, be careful \r\n")
         logging.warning("tello.flip(): Invalid value.")
         return "error"
 
@@ -449,7 +445,8 @@ class Tello:
         """Sends command to set speed to x cm/s"""
         logging.debug("Sending command: set_speed()")
         if x >= 1 and x <= 100:
-            return self.run(f"speed {str(x)}", f"Setting speed to {str(x)} cm/s \r\n")
+            return self.run(f"speed {str(x)}",
+                            f"Setting speed to {str(x)} cm/s \r\n")
         logging.warning("tello.set_speed(): Invalid value.")
         return "error"
 
@@ -536,12 +533,14 @@ class Tello:
     def get_ap(self):
         """Sends command to get RMTT AP info"""
         logging.debug("Sending command: get_ap()")
-        return self.run("ap?", "Obtaining RMTT Access Point SSID and password \r\n")
+        return self.run("ap?",
+                        "Obtaining RMTT Access Point SSID and password \r\n")
 
     def get_rmtt_wifi(self):
         """Sends command to get RMTT SSID"""
         logging.debug("Sending command: get_ssid()")
-        return self.run("ssid?", "Obtaining RMTT WiFi SSID and password (if any) \r\n")
+        return self.run("ssid?",
+                        "Obtaining RMTT WiFi SSID and password (if any) \r\n")
 
     # COMPLEX Commands
     def go(self, x: int, y: int, z: int, s: int):
@@ -558,17 +557,13 @@ class Tello:
         logging.warning("tello.go(): Invalid coordinates.")
         return "error"
 
-    def curve(self, x1: int, x2: int, y1: int, y2: int, z1: int, z2: int, s: int):
+    def curve(self, x1: int, x2: int, y1: int, y2: int, z1: int, z2: int,
+              s: int):
         """Sends command to curve from x1 y1 z1 at speed s to x2 y2 z2"""
         logging.debug("Sending command: curve()")
-        if (
-            500 >= x1 >= -500
-            and 500 >= x2 >= -500
-            and 500 >= y1 >= -500
-            and 500 >= y2 >= -500
-            and 500 >= z1 >= -500
-            and 500 >= z2 >= -500
-        ):
+        if (500 >= x1 >= -500 and 500 >= x2 >= -500 and 500 >= y1 >= -500
+                and 500 >= y2 >= -500 and 500 >= z1 >= -500
+                and 500 >= z2 >= -500):
             if 60 >= s >= 10:
                 return self.run(
                     f"curve {str(x1)} {str(y1)} {str(z1)} {str(x2)} {str(y2)} {str(z2)} {str(s)}",
@@ -596,16 +591,16 @@ class Tello:
                         f"go {str(x)} {str(y)} {str(z)} {str(s)} {str(mid)}",
                         f"Going to (x, y, z): {str(x)} {str(y)} {str(z)} at the speed of {str(s)} cm/s\r\n",
                     )
-                logging.warning("tello.go_mission_pad(): Invalid mission pad ID.")
+                logging.warning(
+                    "tello.go_mission_pad(): Invalid mission pad ID.")
                 return "error"
             logging.warning("tello.go_mission_pad(): Invalid speed.")
             return "error"
         logging.warning("tello.go_mission_pad(): Invalid coordinates.")
         return "error"
 
-    def curve_mission_pad(
-        self, x1: int, x2: int, y1: int, y2: int, z1: int, z2: int, s: int, mid: str
-    ):
+    def curve_mission_pad(self, x1: int, x2: int, y1: int, y2: int, z1: int,
+                          z2: int, s: int, mid: str):
         """Sends command to curve from x y z 1 at speed s to x y z 2 and find Mpad mid"""
         logging.debug("Sending command: curve_mission_pad()")
         mid_ok = False
@@ -613,21 +608,17 @@ class Tello:
             if id == mid:
                 mid_ok = True
                 break
-        if (
-            500 >= x1 >= -500
-            and 500 >= x2 >= -500
-            and 500 >= y1 >= -500
-            and 500 >= y2 >= -500
-            and 500 >= z1 >= -500
-            and 500 >= z2 >= -500
-        ):
+        if (500 >= x1 >= -500 and 500 >= x2 >= -500 and 500 >= y1 >= -500
+                and 500 >= y2 >= -500 and 500 >= z1 >= -500
+                and 500 >= z2 >= -500):
             if 60 >= s >= 10:
                 if mid_ok:
                     return self.run(
                         f"curve {str(x1)} {str(x2)} {str(z1)} {str(x2)} {str(y2)} {str(z2)} {str(s)} {str(mid)}",
                         f"Curving from (x, y, z): {x1} {y1} {z1} to {x2} {y2} {z2} at the speed of {str(s)} cm/s\r\n",
                     )
-                logging.warning("tello.curve_mission_pad(): Invalid mission pad ID.")
+                logging.warning(
+                    "tello.curve_mission_pad(): Invalid mission pad ID.")
                 return "error"
             logging.warning("tello.curve_mission_pad(): Invalid speed.")
             return "error"
@@ -662,20 +653,13 @@ class Tello:
         logging.warning("tello.set_light_pulse(): Invalid values.")
         return "led error"
 
-    def set_light_flash(
-        self, r1: int, g1: int, b1: int, r2: int, g2: int, b2: int, f: float or int
-    ):
+    def set_light_flash(self, r1: int, g1: int, b1: int, r2: int, g2: int,
+                        b2: int, f: float or int):
         """Sends command to set the 2 colors of the LED to flash"""
         logging.debug("Sending command: set_light_flash()")
-        if (
-            255 >= r1 >= 0
-            and 255 >= g1 >= 0
-            and 255 >= b1 >= 0
-            and 255 >= r2 >= 0
-            and 255 >= g2 >= 0
-            and 255 >= b2 >= 0
-            and 2.5 >= f >= 0.1
-        ):
+        if (255 >= r1 >= 0 and 255 >= g1 >= 0 and 255 >= b1 >= 0
+                and 255 >= r2 >= 0 and 255 >= g2 >= 0 and 255 >= b2 >= 0
+                and 2.5 >= f >= 0.1):
             return self.run(
                 f"EXT led bl {str(f)} {str(r1)} {str(g1)} {str(b1)} {str(r2)} {str(g2)} {str(b2)}",
                 f"Setting RMTT light color to (r, g, b): {str(r1)}, {str(g1)}, {str(b1)} and {str(r2)}, {str(g2)}, {str(b2)} with flash of {str(f)} Hz\r\n",
@@ -688,7 +672,8 @@ class Tello:
         logging.debug("Sending command: set_display_pattern()")
         for char in pattern:
             if char not in "rbp0":
-                logging.warning("tello.set_display_pattern(): Invalid pattern.")
+                logging.warning(
+                    "tello.set_display_pattern(): Invalid pattern.")
                 return "matrix error"
         return self.run(
             f"EXT mled g {str(pattern)}",
@@ -703,14 +688,14 @@ class Tello:
             "Turning off the display\r\n",
         )
 
-    def set_display_string(
-        self, direction: str, color: str, frame_rate: float or int, string: str
-    ):
+    def set_display_string(self, direction: str, color: str, frame_rate: float
+                           or int, string: str):
         """Sends command to show a string on the display"""
         logging.debug("Sending command: set_display_string()")
         for char in direction:
             if char not in "lrud":
-                logging.warning("tello.set_display_string(): Invalid direction.")
+                logging.warning(
+                    "tello.set_display_string(): Invalid direction.")
                 return "matrix error"
         if color in ("r", "b", "p") and 10 >= frame_rate >= 0.1:
             return self.run(
@@ -720,18 +705,19 @@ class Tello:
         logging.warning("tello.set_display_string(): Invalid values.")
         return "matrix error"
 
-    def set_display_moving_image(
-        self, direction: str, color: str, frame_rate: float or int, pattern: str
-    ):
+    def set_display_moving_image(self, direction: str, color: str,
+                                 frame_rate: float or int, pattern: str):
         """Sends command to show a moving image on the display"""
         logging.debug("Sending command: set_display_moving_image()")
         for char in direction:
             if char not in "lrud":
-                logging.warning("tello.set_display_moving_image(): Invalid direction.")
+                logging.warning(
+                    "tello.set_display_moving_image(): Invalid direction.")
                 return "matrix error"
         for char in pattern:
             if char not in "rbp0":
-                logging.warning("tello.set_display_moving_image(): Invalid pattern.")
+                logging.warning(
+                    "tello.set_display_moving_image(): Invalid pattern.")
                 return "matrix error"
         if color in ("r", "b", "p") and 10 >= frame_rate >= 0.1:
             return self.run(
@@ -744,11 +730,8 @@ class Tello:
     def set_display_ascii_character(self, character: str, color: str):  # TEST
         """Sends command to display ascii character"""
         logging.debug("Sending command: set_display_ascii_character()")
-        if (
-            character == "heart"
-            or character.encode("ascii")
-            and color in ("r", "b", "p")
-        ):
+        if (character == "heart"
+                or character.encode("ascii") and color in ("r", "b", "p")):
             return self.run(
                 # TEST
                 f'EXT mled s {str(color)} {str(character.encode("ascii"))}',
@@ -772,7 +755,8 @@ class Tello:
     def clear_display_boot(self):
         """Sends command to clear the display boot pattern"""
         logging.debug("Sending command: clear_display_boot()")
-        return self.run("EXT mled sc", "Clearing RMTT boot display pattern\r\n")
+        return self.run("EXT mled sc",
+                        "Clearing RMTT boot display pattern\r\n")
 
     def set_display_brightness(self, brightness: int):
         """Sends command to set the display brightness"""
@@ -788,7 +772,8 @@ class Tello:
     def get_tof(self):
         """Sends command to get the distance from the drone to the nearest obstacle in front"""
         logging.debug("Sending command: get_tof()")
-        return self.run("EXT tof?", "Getting ToF (read docs for more info)...\r\n")
+        return self.run("EXT tof?",
+                        "Getting ToF (read docs for more info)...\r\n")
 
     def get_esp32_version(self):
         """Sends command to get the ESP32 version"""

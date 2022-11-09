@@ -10,7 +10,6 @@ host = ""
 port = 9000
 locaddr = (host, port)
 
-
 # Print general info for the user
 print("_________  ____                  ____ ")
 print("    |      |      |      |      |    |")
@@ -25,7 +24,6 @@ time.sleep(1)
 
 print("          Checking network...         \r\n")
 time.sleep(1)
-
 
 try:
     process = subprocess.Popen(
@@ -48,7 +46,8 @@ try:
         print(
             "It seems like you have joined a different network. Please make sure that you have joined the TELLO-XXXXX Wi-Fi."
         )
-        approval = input("Are you sure you want to continue with the script? (y/n)")
+        approval = input(
+            "Are you sure you want to continue with the script? (y/n)")
         if approval == "y":
             print("\r\n")
         else:
@@ -60,10 +59,8 @@ except subprocess.SubprocessError:
     print("\r\nSeems like there was an error checking the network.")
     print("Continuing.\r\n")
 
-
 print("         Making UDP socket...         \r\n")
 time.sleep(1)
-
 
 # Create a UDP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -92,7 +89,8 @@ def recv():
             break
 
 
-print("\r\nTo view all available functions, type", "\033[1m" + "help" + "\033[0m")
+print("\r\nTo view all available functions, type",
+      "\033[1m" + "help" + "\033[0m")
 print("\r\nTo quit the script, type", "\033[1m" + "end" + "\033[0m")
 print(
     "\r\n(For emergencies) To immediately quit the script, press",
@@ -105,11 +103,9 @@ print(
 )
 print("\r\nTo begin, type", "\033[1m" + "command" + "\033[0m: \r\n")
 
-
 # recvThread create
 recvThread = threading.Thread(target=recv)
 recvThread.start()
-
 
 # Main loop: what happens repeatedly
 while True:
@@ -162,10 +158,14 @@ while True:
                 "     curve x1 y1 z1 x2 y2 z2 s -- Fly at a curve (make corner from coordinates) at s speed (arc radius must be between 0.5m and 10m)"
             )
             print("                   x1, x2 = left, right (-500 to 500)")
-            print("                   y1, y2 = forwards, backwards (-500 to 500)")
+            print(
+                "                   y1, y2 = forwards, backwards (-500 to 500)"
+            )
             print("                   z1, z2 = up, down (-500 to 500)")
             print("                   s = cm/s (10 to 60)")
-            print("     go x y z s mid -- Fly to x y z at speed s of the mission pad")
+            print(
+                "     go x y z s mid -- Fly to x y z at speed s of the mission pad"
+            )
             print("                   x = left, right (-500 to 500)")
             print("                   y = forwards, backwards (-500 to 500)")
             print("                   z = up, down (-500 to 500)")
@@ -175,7 +175,9 @@ while True:
                 "     curve x1 y1 z1 x2 y2 z2 s mid -- Fly at a curve (make corner from coordinates) at s speed (arc radius must be between 0.5m and 10m) of the mission pad"
             )
             print("                   x1, x2 = left, right (-500 to 500)")
-            print("                   y1, y2 = forwards, backwards (-500 to 500)")
+            print(
+                "                   y1, y2 = forwards, backwards (-500 to 500)"
+            )
             print("                   z1, z2 = up, down (-500 to 500)")
             print("                   s = cm/s (10 to 60)")
             print(
@@ -192,7 +194,9 @@ while True:
         elif msg == "help set":
             print("\r\nSet commands:")
             print("     speed x -- Set speed to x (10 to 100 cm/s)")
-            print("     wifi name pass -- Set Wi-Fi ssid to name and password to pass")
+            print(
+                "     wifi name pass -- Set Wi-Fi ssid to name and password to pass"
+            )
             print("     mon -- Enable mission pad detection")
             print("     moff -- Disable mission pad detection")
             print(
