@@ -2,7 +2,7 @@
 
 This is a library for easy usage of the Ryze Tello drone education edition and RoboMaster Tello Talent. Beginner Friendly! <br />
 **Current Version:**
-_2.4.1_ <br />
+_2.4.2_ <br />
 SDK 3.0 is **here** and **tested**!
 
 ## Requirements:
@@ -32,12 +32,10 @@ user@os$ pip install tello-sdk
 The library is beginner friendly. Even if you are new to programming, usage should be easy.
 The Tello SDK library is made of callable functions that make the drone do something.
 
-[For function names, refer to the Docs](https://github.com/ErnGusMik/python-tello/wiki)
-
-## Contributors
-
-This library was created entirely by ErnGusMik
+[Refer to the Docs](https://github.com/ErnGusMik/python-tello/wiki)
 
 ## Licence
 
-This library is licenced under the MIT licence.
+This library is licenced under the MIT licence.<br/>
+
+This is not the official Tello/RMTT SDK
