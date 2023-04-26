@@ -1,4 +1,3 @@
-# !! tello.curveMpad() -- ERROR: RUN TIMEOUT ???
 # Import all needed libraries
 import logging
 import socket
@@ -16,11 +15,9 @@ import sentry_sdk
 
 # ------------------ #
 sentry_sdk.init(
-    dsn=
-    "https://f2fcaa10be4f41958ab756183583ba81@o1400261.ingest.sentry.io/6728983",
+    dsn="https://f2fcaa10be4f41958ab756183583ba81@o1400261.ingest.sentry.io/6728983",
     traces_sample_rate=1.0,
 )
-
 # ------------------ #
 
 
@@ -78,7 +75,7 @@ class Tello:
         logging.info("             Drone Script             ")
         logging.info("--------------------------------------")
 
-        logging.debug(f"Current port for UDP connection: {str(port)}")
+        logging.debug(f"Current port for UDP connection: %s", str(port))
 
         logging.info("          Checking network...         \r\n")
         time.sleep(0.5)
@@ -416,12 +413,12 @@ class Tello:
         """Sends command to rotate clockwise or anti-clockwise for specified amount of degrees"""
         logging.debug("Sending command: cw()")
         if 1 <= degrees <= 360:
-            if direction is "cw":
+            if direction == "cw":
                 return self.run(
                     f"cw {str(degrees)}",
                     f"Rotating clockwise {str(degrees)} degrees \r\n",
                 )
-            if direction is "ccw":
+            if direction == "ccw":
                 return self.run(
                     f"ccw {str(degrees)}",
                     f"Rotating counter-clockwise {str(degrees)} degrees \r\n",
@@ -444,7 +441,7 @@ class Tello:
     def set_speed(self, x: int):
         """Sends command to set speed to x cm/s"""
         logging.debug("Sending command: set_speed()")
-        if x >= 1 and x <= 100:
+        if 1 <= x <= 100:
             return self.run(f"speed {str(x)}",
                             f"Setting speed to {str(x)} cm/s \r\n")
         logging.warning("tello.set_speed(): Invalid value.")
@@ -475,7 +472,7 @@ class Tello:
     def set_mission_direction(self, x: int):
         """Sends command to set mission pad detection direction"""
         logging.debug("Sending command: set_mission_direction()")
-        if x >= 0 and x <= 3:
+        if 0 <= x <= 3:
             return self.run(
                 f"mdirection {str(x)}",
                 f"Setting Mission Pad Detection to setting {str(x)}\r\n",
@@ -659,7 +656,7 @@ class Tello:
         logging.debug("Sending command: set_light_flash()")
         if (255 >= r1 >= 0 and 255 >= g1 >= 0 and 255 >= b1 >= 0
                 and 255 >= r2 >= 0 and 255 >= g2 >= 0 and 255 >= b2 >= 0
-                and 2.5 >= f >= 0.1):
+                and 10 >= f >= 0.1):
             return self.run(
                 f"EXT led bl {str(f)} {str(r1)} {str(g1)} {str(b1)} {str(r2)} {str(g2)} {str(b2)}",
                 f"Setting RMTT light color to (r, g, b): {str(r1)}, {str(g1)}, {str(b1)} and {str(r2)}, {str(g2)}, {str(b2)} with flash of {str(f)} Hz\r\n",
@@ -689,7 +686,7 @@ class Tello:
         )
 
     def set_display_string(self, direction: str, color: str, frame_rate: float
-                           or int, string: str):
+                           or int, text: str):
         """Sends command to show a string on the display"""
         logging.debug("Sending command: set_display_string()")
         for char in direction:
@@ -699,13 +696,13 @@ class Tello:
                 return "matrix error"
         if color in ("r", "b", "p") and 10 >= frame_rate >= 0.1:
             return self.run(
-                f"EXT mled {str(direction)} {str(color)} {str(frame_rate)} {str(string)}",
-                f"Showing the string: {str(string)} with color: {str(color)}, frame rate (Hz): {str(frame_rate)} and in the diretion: {str(direction)} on the RMTT display \r\n",
+                f"EXT mled {str(direction)} {str(color)} {str(frame_rate)} {str(text)}",
+                f"Showing the string: {str(text)} with color: {str(color)}, frame rate (Hz): {str(frame_rate)} and in the diretion: {str(direction)} on the RMTT display \r\n",
             )
         logging.warning("tello.set_display_string(): Invalid values.")
         return "matrix error"
 
-    def set_display_moving_image(self, direction: str, color: str,
+    def set_display_moving_image(self, direction: str,
                                  frame_rate: float or int, pattern: str):
         """Sends command to show a moving image on the display"""
         logging.debug("Sending command: set_display_moving_image()")
@@ -719,10 +716,10 @@ class Tello:
                 logging.warning(
                     "tello.set_display_moving_image(): Invalid pattern.")
                 return "matrix error"
-        if color in ("r", "b", "p") and 10 >= frame_rate >= 0.1:
+        if 2.5 >= frame_rate >= 0.1:
             return self.run(
                 f"EXT mled {str(direction)} g {str(frame_rate)} {str(pattern)}",
-                f"Showing a moving image on the RMTT display in the direction: {str(direction)} with color: {str(color)}, frame rate (Hz): {str(frame_rate)} and pattern: {str(pattern)} \r\n",
+                f"Showing a moving image on the RMTT display in the direction: {str(direction)} with frame rate (Hz): {str(frame_rate)} and pattern: {str(pattern)} \r\n",
             )
         logging.warning("tello.set_display_moving_image(): Invalid values.")
         return "matrix error"

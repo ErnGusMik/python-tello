@@ -3,6 +3,7 @@ from setuptools import setup
 
 
 def readme():
+    """Returns the README.md file as a string"""
     with open("README.md") as f:
         return f.read()
 
@@ -12,13 +13,11 @@ setup(
     packages=find_packages("tello_sdk"),
     version="2.4.1",
     license="MIT",
-    description=
-    "Python SDK fro the Tello EDU and RMTT drones, with all commands and more.",
+    description="Python SDK fro the Tello EDU and RMTT drones, with all commands and more.",
     author="ErnGusMik",
     author_email="ernests.mikuts@gmail.com",
     url="https://github.com/ErnGusMik/python-tello",
-    download_url=
-    "https://github.com/ErnGusMik/python-tello/archive/refs/tags/v2.1.0-alpha.tar.gz",
+    download_url="https://github.com/ErnGusMik/python-tello/archive/refs/tags/v2.1.0-alpha.tar.gz",
     keywords=[
         "tello",
         "drone",
