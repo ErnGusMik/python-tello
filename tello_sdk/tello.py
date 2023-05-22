@@ -1,12 +1,4 @@
-# Import all needed libraries
-# import self.logging
-# import socket
-# import subprocess
-# import sys
-# import threading
-# import time
-
-
+"""Unofficial Tello SDK for Python 3.6 or higher."""
 # Class for all functions for user
 class Tello:
     """Class for info commands to the Tello or RMTT drones"""
@@ -59,7 +51,7 @@ class Tello:
         self.abort = False
         self.response = None
         self.sent = None
-        self.ip = None
+        self.ip_addr = None
         self.status_port = 8889
         self.video_port = 11111
 
@@ -79,7 +71,7 @@ class Tello:
         self.logging.info("             Drone Script             ")
         self.logging.info("--------------------------------------")
 
-        self.logging.debug(f"Current port for UDP connection: %s", str(port))
+        self.logging.debug("Current port for UDP connection: %s", str(port))
 
         self.logging.info("          Checking network...         \r\n")
         time.sleep(0.5)
@@ -142,18 +134,20 @@ class Tello:
         self.logging.debug("Socket created.")
         self.logging.debug("Socket bound to: %s", str(locaddr))
 
-        self.recvThread = threading.Thread(target=self.receive)
-        self.recvThread.start()
+        self.recv_thread = threading.Thread(target=self.receive)
+        self.recv_thread.start()
         self.logging.debug("Receive thread started.")
         self.logging.debug("--------------------------------------\r\n")
 
     # Function to receive commands from the drone
     def receive(self):
         """Receives UDP messages from the drone"""
+        import socket
         while True:
             try:
-                self.response, self.ip = self.sock.recvfrom(256)
-            except Exception:
+                self.response, self.ip_addr = self.sock.recvfrom(256)
+            except socket.error as exc:
+                self.logging.critical("Error receiving response: %s", exc)
                 break
 
     def run(self,
@@ -570,9 +564,7 @@ class Tello:
             if 60 >= s >= 10:
                 return self.run(
                     f"curve {str(x1)} {str(y1)} {str(z1)} {str(x2)} {str(y2)} {str(z2)} {str(s)}",
-                    f"Curving from (x, y, z): {str(x1)} {str(y1)} {str(z1)} to {str(x2)} {str(y2)} {str(z2)} at the speed of",
-                    str(s),
-                    "cm/s\r\n",
+                    f"Curving from (x, y, z): {str(x1)} {str(y1)} {str(z1)} to {str(x2)} {str(y2)} {str(z2)} at the speed of {str(s)} cm/s\r\n",
                 )
             self.logging.warning("tello.curve(): Invalid speed.")
             return "error"
@@ -583,8 +575,8 @@ class Tello:
         """Sends command to move to mission pad x y z at speed s and find Mpad mid"""
         self.logging.debug("Sending command: go_mission_pad()")
         mid_ok = False
-        for id in self.mids.split(" "):
-            if id == mid:
+        for current_mid in self.mids.split(" "):
+            if current_mid == mid:
                 mid_ok = True
                 break
         if 500 >= x >= -500 and 500 >= y >= -500 and 500 >= z >= -500:
@@ -607,8 +599,8 @@ class Tello:
         """Sends command to curve from x y z 1 at speed s to x y z 2 and find Mpad mid"""
         self.logging.debug("Sending command: curve_mission_pad()")
         mid_ok = False
-        for id in self.split(" "):
-            if id == mid:
+        for current_mid in self.mids.split(" "):
+            if current_mid == mid:
                 mid_ok = True
                 break
         if (500 >= x1 >= -500 and 500 >= x2 >= -500 and 500 >= y1 >= -500
